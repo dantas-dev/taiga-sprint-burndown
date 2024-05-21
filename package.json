@@ -1,0 +1,12 @@
+{
+  "name": "@dantasdev/taiga-sprint-burndown",
+  "version": "0.1.0",
+  "description": "todo",
+  "main": "content.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "dantas-dev",
+  "license": "MIT"
+}

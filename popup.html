@@ -1,0 +1,33 @@
+<html>
+
+<head>
+  <title>Taiga Sprint Burndown v.0.1</title>
+  <meta charset="UTF-8">
+  <script src="popup.js"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <h1>Taiga Sprint Burndown</h1>
+  <p class="dantinhas">v0.1 - author: Eduardo Dantas</p>
+  <p id="error">Site inválido.</p>
+  <div id="content">
+    <button id="refresh">Refresh</button>
+    <ul id="data">
+      <li><strong>SQUAD:</strong> <span id="squad-name"></span></li>
+      <li><strong>DURATION:</strong> <span id="duration"></span></li>
+      <li><strong>TOTAL (HR):</strong> <span id="total-hr"></span></li>
+      <li><strong>TOTAL (TASKS):</strong> <span id="qtd-total"></span></li>
+      <li><strong>QTD. CLOSED:</strong> <span id="qtd-closed"></span></li>
+      <li><strong>QTD. NEW:</strong> <span id="qtd-new"></span></li>
+      <li>
+        <div>
+          <p><strong>STORIES</strong></p>
+          <ul id="storys"></ul>
+        </div>
+      </li>
+    </ul>
+  </div>
+</body>
+
+</html>
