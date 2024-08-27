@@ -1,11 +1,11 @@
 {
   "manifest_version": 3,
-  "name": "Taiga Sprint Burndown",
+  "name": "Taiga Sprint Burndown - Copy",
   "version": "0.1",
   "icons": {
-    "32": "icon32.png",
-    "64": "icon64.png",
-    "128": "icon128.png"
+    "32": "public/icon32.png",
+    "64": "public/icon64.png",
+    "128": "public/icon128.png"
   },
   "permissions": [
     "activeTab",
@@ -13,7 +13,7 @@
     "scripting"
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "src/background.js"
   },
   "content_scripts": [
     {
@@ -21,7 +21,8 @@
         "<all_urls>"
       ],
       "js": [
-        "content.js"
+        "src/content.js",
+        "src/popup.js"
       ]
     }
   ],
