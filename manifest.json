@@ -13,7 +13,7 @@
     "scripting"
   ],
   "background": {
-    "service_worker": "src/background.js"
+    "service_worker": "dist/background.js"
   },
   "content_scripts": [
     {
@@ -21,13 +21,13 @@
         "<all_urls>"
       ],
       "js": [
-        "src/content.js",
-        "src/popup.js"
+        "dist/content.js",
+        "dist/popup.js"
       ]
     }
   ],
   "action": {
-    "default_popup": "popup.html"
+    "default_popup": "dist/popup.html"
   },
   "host_permissions": [
     "http://*/*",

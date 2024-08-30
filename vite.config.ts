@@ -1,15 +1,19 @@
-import { defineConfig } from 'vite';
-import type { UserConfig } from 'vite';
+import { defineConfig } from 'vite'
 
+// https://vitejs.dev/config/
 export default defineConfig({
-  build: {
-    rollupOptions: {
-      input: {
-        app: './popup.html',
+  build:{
+    target:"esnext",
+    rollupOptions:{
+      input:{
+        popup: "./popup.html",
+        background: "./src/background/main.ts",
+        content: "./src/content/main.ts",
+      },
+      output:{
+        entryFileNames: "[name].js"
       }
-    }
+    },
   },
-  server: {
-    open: './popup.html'
-  }
-}) satisfies UserConfig;
+  base: "./"
+})

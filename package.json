@@ -2,19 +2,19 @@
   "name": "@dantasdev/taiga-sprint-burndown",
   "version": "0.1.0",
   "description": "todo",
-  "main": "/src/content.js",
-  "scripts": {
-    "start": "vite",
-    "build": "tsc && vite build",
-    "serve": "vite preview"
-  },
   "keywords": [],
   "author": "dantas-dev",
   "license": "MIT",
-  "dependencies": {
-    "vite": "^5.4.1"
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build --config vite.config.ts",
+    "preview": "vite preview"
   },
   "devDependencies": {
-    "typescript": "^5.5.4"
+    "@types/chrome": "^0.0.270",
+    "typescript": "^5.5.3",
+    "vite": "^5.4.1"
   }
 }
