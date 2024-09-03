@@ -11,7 +11,7 @@
     "dev": "vite",
     "build": "tsc && vite build --config vite.config.ts",
     "preview": "vite preview",
-    "build:extension": "node packExtension.js"
+    "build:extension": "npm run build && node packExtension.js"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.270",
