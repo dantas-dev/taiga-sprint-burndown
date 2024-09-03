@@ -3,9 +3,9 @@
   "name": "Taiga Sprint Burndown",
   "version": "0.1",
   "icons": {
-    "32": "public/icon32.png",
-    "64": "public/icon64.png",
-    "128": "public/icon128.png"
+    "32": "icon32.png",
+    "64": "icon64.png",
+    "128": "icon128.png"
   },
   "permissions": [
     "activeTab",
@@ -13,7 +13,7 @@
     "scripting"
   ],
   "background": {
-    "service_worker": "dist/background.js"
+    "service_worker": "background.js"
   },
   "content_scripts": [
     {
@@ -21,13 +21,13 @@
         "<all_urls>"
       ],
       "js": [
-        "dist/content.js",
-        "dist/popup.js"
+        "content.js",
+        "popup.js"
       ]
     }
   ],
   "action": {
-    "default_popup": "dist/popup.html"
+    "default_popup": "popup.html"
   },
   "host_permissions": [
     "http://*/*",

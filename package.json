@@ -10,11 +10,16 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build --config vite.config.ts",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:extension": "node packExtension.js"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.270",
     "typescript": "^5.5.3",
-    "vite": "^5.4.1"
+    "vite": "^5.4.1",
+    "vite-plugin-static-copy": "^1.0.6"
+  },
+  "dependencies": {
+    "crx": "^5.0.1"
   }
 }
