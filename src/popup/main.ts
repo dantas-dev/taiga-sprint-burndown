@@ -1,7 +1,9 @@
+// @ts-nocheck
+
 function checkNaN(hr) {
   return hr.includes('NaN') ?  'NOT FOUND' : hr;
 }
-
+  
 document.addEventListener('DOMContentLoaded', () => {
 
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
