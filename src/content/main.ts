@@ -15,9 +15,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const { totalHR, totalTypes, totalClosed, totalNew, totalClosedHR } = sumStorys(storys);
     const aggregatedMembersInfo = aggregateMembersInfo(storys)
 
-    console.log(aggregatedMembersInfo);
-    
-
     const totalPercent = calculatePercentage(parseTime(totalClosedHR), parseTime(totalHR));
     const remainingHours = subtractTimes(totalClosedHR, totalHR);
 

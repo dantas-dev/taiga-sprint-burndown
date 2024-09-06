@@ -30,8 +30,6 @@ export function getStorys(): Story[] {
           remainingHours,
         })
       });
-    
-      
 
     return storys;
   } catch (error) {
