@@ -1,8 +1,11 @@
-export function getTaskInfo(item) {
-  const str = item.querySelector('.card-title').innerText || '';
+import { Task } from "../../interfaces";
+
+export function getTaskInfo(item: Element): Task {
+  const str = item.querySelector<HTMLElement>('.card-title').innerText || '';
   const isClosed = !!item.querySelector('.card-tag[title=closed]');
   const isNew = !!item.querySelector('.card-tag[title=new]');
-
+  const assignedTo = item.querySelector<HTMLElement>('.card-user-avatar img').title;
+  
   const regex = /#\d+\[([^\]]+)\]\s*([^\(]+)\s*\(([^)]+)\)/;
   const matches = str.match(regex);
 
@@ -22,5 +25,6 @@ export function getTaskInfo(item) {
     hours,
     isClosed,
     isNew,
+    assignedTo,
   }
 }
