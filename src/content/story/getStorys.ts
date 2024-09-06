@@ -1,12 +1,13 @@
+import { Story } from "../../interfaces";
 import { calculatePercentage } from "../calculatePercentage";
 import { getTasks } from "../task/getTasks";
 import { getTotalTasksInfos } from "../task/getTotalTasksInfos";
 import { parseTime } from "../time/parseTime";
 import { subtractTimes } from "../time/subtractTimes";
 
-export function getStorys() {
+export function getStorys(): Story[] {
   try {
-    const storys = [];
+    const storys: Story[] = [];
     document
       .querySelectorAll('.taskboard-row')
       .forEach((item) => {
@@ -29,6 +30,8 @@ export function getStorys() {
           remainingHours,
         })
       });
+    
+      
 
     return storys;
   } catch (error) {

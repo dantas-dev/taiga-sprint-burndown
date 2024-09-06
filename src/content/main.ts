@@ -1,5 +1,6 @@
 import { calculatePercentage } from "./calculatePercentage";
 import { getDuration } from "./getDuration";
+import { aggregateMembersInfo } from "./member/aggregateMembersInfo";
 import { getSquadName } from "./squad/getSquadName";
 import { getStorys } from "./story/getStorys";
 import { sumStorys } from "./story/sumStorys";
@@ -12,12 +13,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const duration = getDuration();
     const storys = getStorys();
     const { totalHR, totalTypes, totalClosed, totalNew, totalClosedHR } = sumStorys(storys);
+    const aggregatedMembersInfo = aggregateMembersInfo(storys)
+
+    console.log(aggregatedMembersInfo);
+    
 
     const totalPercent = calculatePercentage(parseTime(totalClosedHR), parseTime(totalHR));
     const remainingHours = subtractTimes(totalClosedHR, totalHR);
 
     // console.log('content', { squadName, duration, storys, totalHR, totalTypes, totalClosed, totalNew, totalClosedHR, totalPercent, remainingHours });
 
-    sendResponse({ squadName, duration, storys, totalHR, totalTypes, totalClosed, totalNew, totalClosedHR, totalPercent, remainingHours });
+    sendResponse({ squadName, duration, storys, totalHR, totalTypes, totalClosed, totalNew, totalClosedHR, totalPercent, remainingHours, aggregatedMembersInfo });
   }
 });
