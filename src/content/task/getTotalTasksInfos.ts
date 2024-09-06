@@ -6,6 +6,7 @@ export function getTotalTasksInfos(tasks) {
   let totalClosedHR = '0.00';
   let totalClosed = 0;
   let totalNew = 0;
+  let totalNewHR = '0.00'
   const totalTypes = {};
 
   tasks.forEach((task) => {
@@ -13,6 +14,10 @@ export function getTotalTasksInfos(tasks) {
     totalTypes[task.type] = (totalTypes[task.type] || 0) + 1;
     totalClosed += task.isClosed ? 1 : 0;
     totalNew += task.isNew ? 1 : 0;
+
+    if (task.isNew) {
+      totalNewHR = sumTimes(totalNewHR, task.hours);
+    }
 
     if (task.isClosed) {
       totalClosedHR = sumTimes(totalClosedHR, task.hours);
@@ -25,5 +30,6 @@ export function getTotalTasksInfos(tasks) {
     totalClosed,
     totalClosedHR,
     totalNew,
+    totalNewHR,
   };
 }
