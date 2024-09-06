@@ -1,8 +1,9 @@
+import { Task } from "../../interfaces";
 import { getTaskInfo } from "./getTaskInfo";
 
-export function getTasks(document) {
+export function getTasks(document: Element): Task[] {
   try {
-    const tasks = [];
+    const tasks: Task[] = [];
     document.querySelectorAll('.card-inner')
       .forEach((item) => {
         tasks.push(getTaskInfo(item))
