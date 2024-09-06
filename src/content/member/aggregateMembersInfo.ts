@@ -18,7 +18,9 @@ export function aggregateMembersInfo(storys: Story[]): MemberTaskInfo[] {
     });
   });
 
-  return Object.values(memberMap).map(({ member, hours, tasks }) => ({
+  return Object.values(memberMap)
+  .sort((a, b) => b.hours - a.hours)
+  .map(({ member, hours, tasks }) => ({
     member,
     hours: formatTime(hours),
     tasks
