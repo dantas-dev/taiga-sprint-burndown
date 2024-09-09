@@ -4,6 +4,10 @@ function checkNaN(hr) {
   return hr.includes('NaN') ?  'NOT FOUND' : hr;
 }
 
+function activateCopyButton() {
+  return (document.getElementById("copyData") as HTMLInputElement).disabled = false;
+}
+
 document.getElementById('copyData').addEventListener('click', () => {
   const data = document.getElementById('data').innerText || 'NOT FOUND'
   const membersInfo = document.getElementById('members-info').innerText || 'NOT FOUND'
@@ -64,7 +68,9 @@ document.addEventListener('DOMContentLoaded', () => {
         `)
         .join('');
       
-        fillMembersTable('members-info', aggregatedMembersInfo)
+        fillMembersTable('members-info', aggregatedMembersInfo);
+        activateCopyButton();
+
     });
   });
 });
