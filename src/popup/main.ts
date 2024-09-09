@@ -1,4 +1,4 @@
-// @ts-nocheck
+import { fillMembersTable } from "./fillMembersTable";
 
 function checkNaN(hr) {
   return hr.includes('NaN') ?  'NOT FOUND' : hr;
@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
       remainingHours,
       totalPercent,
       storys,
+      aggregatedMembersInfo,
       totalNewHR
     }) => {
       document.getElementById('squad-name').textContent = squadName || 'NOT FOUND';
@@ -40,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('qtd-new').textContent = totalNew || 'NOT FOUND';
       document.getElementById('qtd-new-hr').textContent = totalNewHR || 'NOT FOUND';
 
-      const totalOfTotalTypes = Object.values(totalTypes).reduce((acc, curr) => acc + curr, 0);
+      const totalOfTotalTypes = Object.values(totalTypes).reduce((acc: number, curr: number) => acc + curr, 0);
       document.getElementById('qtd-total').textContent = 
       `${totalOfTotalTypes} (${Object.entries(totalTypes).map(([key, value]) => `${key}: ${value}`).join(', ')})`;
 
@@ -56,6 +57,8 @@ document.addEventListener('DOMContentLoaded', () => {
           </li>
         `)
         .join('');
+      
+        fillMembersTable('members-info', aggregatedMembersInfo)
     });
   });
 });

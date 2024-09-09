@@ -1,7 +1,7 @@
+import { Task, TotalTaskInfo } from "../../interfaces";
 import { sumTimes } from "../time/sumTimes";
 
-
-export function getTotalTasksInfos(tasks) {
+export function getTotalTasksInfos(tasks: Task[]): TotalTaskInfo {
   let totalHR = '0.00';
   let totalClosedHR = '0.00';
   let totalClosed = 0;

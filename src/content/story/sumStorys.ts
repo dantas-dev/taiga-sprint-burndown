@@ -1,6 +1,7 @@
+import { Story, SumStorys } from '../../interfaces';
 import { sumTimes} from '../time/sumTimes'
 
-export function sumStorys(storys) {
+export function sumStorys(storys: Story[]): SumStorys {
   
   let totalHR = '0.00';
   let totalClosedHR = '0.00';
@@ -19,6 +20,7 @@ export function sumStorys(storys) {
       totalTypes[type] = (totalTypes[type] || 0) + story.totalTypes[type];
     });
   });
+  
 
   return { totalHR, totalTypes, totalClosed, totalNew, totalClosedHR, totalNewHR };
 }
