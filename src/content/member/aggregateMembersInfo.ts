@@ -7,8 +7,8 @@ export function aggregateMembersInfo(storys: Story[]): MemberTaskInfo[] {
 
   storys.forEach(story => {
     story.tasks.forEach(task => {
-      const { assignedTo, hours } = task;
-      if (assignedTo !== 'Not assigned') {
+      const { assignedTo, hours, isClosed } = task;
+      if (assignedTo !== 'Not assigned' && isClosed) {
         if (!memberMap[assignedTo]) {
           memberMap[assignedTo] = { member: assignedTo, hours: 0, tasks: 0 };
         }
@@ -19,7 +19,13 @@ export function aggregateMembersInfo(storys: Story[]): MemberTaskInfo[] {
   });
 
   return Object.values(memberMap)
-  .sort((a, b) => b.hours - a.hours)
+  .sort((a, b) => {
+    const hoursDifference = b.hours - a.hours;
+    if (hoursDifference !== 0) {
+      return hoursDifference;
+    }
+    return b.tasks - a.tasks;
+  })
   .map(({ member, hours, tasks }) => ({
     member,
     hours: formatTime(hours),
