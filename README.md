@@ -10,7 +10,7 @@ a fazer
 - [ ] Organizar estrutura e adicionar TS (vite)
 - [ ] Gerar o pack de forma automatica (script)
 - [ ] Add qtd de horas do NEW
-- [ ] Report de qtd de tasks e horas por pessoa
+- [x] Report de qtd de tasks e horas por pessoa
 - [ ] Botão copy
 
 **V0.3**
