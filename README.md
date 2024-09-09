@@ -7,9 +7,9 @@ a fazer
 
 ## TODO
 **V0.2**
-- [ ] Organizar estrutura e adicionar TS (vite)
-- [ ] Gerar o pack de forma automatica (script)
-- [ ] Add qtd de horas do NEW
+- [x] Organizar estrutura e adicionar TS (vite)
+- [x] Gerar o pack de forma automatica (script)
+- [x] Add qtd de horas do NEW
 - [ ] Report de qtd de tasks e horas por pessoa
 - [ ] Botão copy
 
