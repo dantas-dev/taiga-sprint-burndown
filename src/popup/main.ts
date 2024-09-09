@@ -3,7 +3,15 @@ import { fillMembersTable } from "./fillMembersTable";
 function checkNaN(hr) {
   return hr.includes('NaN') ?  'NOT FOUND' : hr;
 }
-  
+
+document.getElementById('copyData').addEventListener('click', () => {
+  const data = document.getElementById('data').innerText || 'NOT FOUND'
+  const membersInfo = document.getElementById('members-info').innerText || 'NOT FOUND'
+
+  const allFields = `${data}\n\n${membersInfo}`
+  navigator.clipboard.writeText(allFields);
+});
+
 document.addEventListener('DOMContentLoaded', () => {
 
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
