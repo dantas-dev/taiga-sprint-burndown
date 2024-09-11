@@ -3,7 +3,19 @@ import { fillMembersTable } from "./fillMembersTable";
 function checkNaN(hr) {
   return hr.includes('NaN') ?  'NOT FOUND' : hr;
 }
-  
+
+function activateCopyButton() {
+  return (document.getElementById("copyData") as HTMLInputElement).disabled = false;
+}
+
+document.getElementById('copyData').addEventListener('click', () => {
+  const data = document.getElementById('data').innerText || 'NOT FOUND'
+  const membersInfo = document.getElementById('members-info').innerText || 'NOT FOUND'
+
+  const allFields = `${data}\n\n${membersInfo}`
+  navigator.clipboard.writeText(allFields);
+});
+
 document.addEventListener('DOMContentLoaded', () => {
 
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -58,7 +70,9 @@ document.addEventListener('DOMContentLoaded', () => {
         `)
         .join('');
       
-        fillMembersTable('members-info', aggregatedMembersInfo)
+        fillMembersTable('members-info', aggregatedMembersInfo);
+        activateCopyButton();
+
     });
   });
 });

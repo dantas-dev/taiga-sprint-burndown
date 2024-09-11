@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./icon128.png" alt="Logo" style="max-width: 300px; height: auto; margin: 0 auto; display: block;">
+  <img src="./public/icon128.png" alt="Logo" style="max-width: 300px; height: auto; margin: 0 auto; display: block;">
 </p>
 
 # TAIGA SPRINT BURNDOWN
@@ -11,7 +11,7 @@ a fazer
 - [x] Gerar o pack de forma automatica (script)
 - [x] Add qtd de horas do NEW
 - [x] Report de qtd de tasks e horas por pessoa
-- [ ] Botão copy
+- [x] Botão copy
 
 **V0.3**
 - [ ] Add elementos na página do taiga
