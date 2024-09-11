@@ -44,12 +44,14 @@ document.addEventListener('DOMContentLoaded', () => {
       totalPercent,
       storys,
       aggregatedMembersInfo,
+      totalNewHR
     }) => {
       document.getElementById('squad-name').textContent = squadName || 'NOT FOUND';
       document.getElementById('duration').textContent = duration || 'NOT FOUND';
       document.getElementById('total-hr').textContent = `${checkNaN(totalClosedHR)} / ${checkNaN(totalHR)} (${checkNaN(remainingHours)} - ${checkNaN(totalPercent)}%)` || 'NOT FOUND';
       document.getElementById('qtd-closed').textContent = totalClosed || 'NOT FOUND';
       document.getElementById('qtd-new').textContent = totalNew || 'NOT FOUND';
+      document.getElementById('qtd-new-hr').textContent = totalNewHR || 'NOT FOUND';
 
       const totalOfTotalTypes = Object.values(totalTypes).reduce((acc: number, curr: number) => acc + curr, 0);
       document.getElementById('qtd-total').textContent = 
@@ -61,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <strong>${story.name}</strong>
             <ul>
               <li>TOTAL (HR): ${checkNaN(story.totalHR)} (${checkNaN(story.remainingHours)} - ${checkNaN(story.totalPercent)}%)</li>
-              <li>CLOSED (HR): ${checkNaN(story.totalClosedHR)}</li>
+              <li>CLOSED (HR): ${checkNaN(story.totalClosedHR)} / NEW CLOSED: ${checkNaN(story.totalNewHR)}</li>
               <li>TASKS (QTD): ${story.tasks.length} (CLOSED: ${story.totalClosed} / NEW: ${story.totalNew})</li>
             </ul>
           </li>

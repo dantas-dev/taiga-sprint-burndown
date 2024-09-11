@@ -7,6 +7,7 @@ export function sumStorys(storys: Story[]): SumStorys {
   let totalClosedHR = '0.00';
   let totalClosed = 0;
   let totalNew = 0;
+  let totalNewHR = '0.00';
   const totalTypes = {};
 
   storys.forEach((story) => {
@@ -14,11 +15,12 @@ export function sumStorys(storys: Story[]): SumStorys {
     totalClosedHR = sumTimes(totalClosedHR, story.totalClosedHR);
     totalClosed += story.totalClosed;
     totalNew += story.totalNew;
+    totalNewHR = sumTimes(totalNewHR, story.totalNewHR);
     Object.keys(story.totalTypes).forEach((type) => {
       totalTypes[type] = (totalTypes[type] || 0) + story.totalTypes[type];
     });
   });
   
 
-  return { totalHR, totalTypes, totalClosed, totalNew, totalClosedHR };
+  return { totalHR, totalTypes, totalClosed, totalNew, totalClosedHR, totalNewHR };
 }
