@@ -10,8 +10,8 @@ a fazer
 - [x] Organizar estrutura e adicionar TS (vite)
 - [x] Gerar o pack de forma automatica (script)
 - [x] Add qtd de horas do NEW
-- [ ] Report de qtd de tasks e horas por pessoa
-- [ ] Botão copy
+- [x] Report de qtd de tasks e horas por pessoa
+- [x] Botão copy
 
 **V0.3**
 - [ ] Add elementos na página do taiga
