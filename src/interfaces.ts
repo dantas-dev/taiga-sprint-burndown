@@ -26,6 +26,7 @@ export interface TotalTaskInfo {
   totalClosed: number;
   totalClosedHR: string;
   totalNew: number;
+  totalNewHR: string,
 }
 
 export interface SumStorys {
