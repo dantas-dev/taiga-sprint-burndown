@@ -12,7 +12,14 @@ export function getStorys(): Story[] {
       .querySelectorAll('.taskboard-row')
       .forEach((item) => {
         const tasks = getTasks(item);
-        const { totalHR, totalTypes, totalClosed, totalNew, totalClosedHR } = getTotalTasksInfos(tasks);
+        const { 
+          totalHR,
+          totalTypes,
+          totalClosed,
+          totalNew,
+          totalClosedHR,
+          totalNewHR
+        } = getTotalTasksInfos(tasks);
 
         const totalPercent = calculatePercentage(parseTime(totalClosedHR), parseTime(totalHR));
         const remainingHours = subtractTimes(totalClosedHR, totalHR);
@@ -25,6 +32,7 @@ export function getStorys(): Story[] {
           totalTypes,
           totalClosed,
           totalClosedHR,
+          totalNewHR,
           totalNew,
           totalPercent,
           remainingHours,
