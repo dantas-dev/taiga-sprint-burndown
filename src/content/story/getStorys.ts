@@ -18,7 +18,8 @@ export function getStorys(): Story[] {
           totalClosed,
           totalNew,
           totalClosedHR,
-          totalNewHR
+          totalNewHR,
+          totalClosedNewHR,
         } = getTotalTasksInfos(tasks);
 
         const totalPercent = calculatePercentage(parseTime(totalClosedHR), parseTime(totalHR));
@@ -36,6 +37,7 @@ export function getStorys(): Story[] {
           totalNew,
           totalPercent,
           remainingHours,
+          totalClosedNewHR,
         })
       });
 
