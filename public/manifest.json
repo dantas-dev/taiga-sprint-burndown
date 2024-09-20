@@ -18,7 +18,7 @@
   "content_scripts": [
     {
       "matches": [
-        "https://taiga.solarmarket.com.br/*"
+        "${VITE_TAIGA_URL}"
       ],
       "js": [
         "content.js"
@@ -29,6 +29,6 @@
     "default_popup": "popup.html"
   },
   "host_permissions": [
-    "https://taiga.solarmarket.com.br/*"
+    "${VITE_TAIGA_URL}"
   ]
 }
