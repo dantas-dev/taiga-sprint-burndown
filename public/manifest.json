@@ -22,7 +22,8 @@
       ],
       "js": [
         "content.js",
-        "popup.js"
+        "popup.js",
+        "page.js"
       ]
     }
   ],
