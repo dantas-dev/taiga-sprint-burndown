@@ -18,11 +18,10 @@
   "content_scripts": [
     {
       "matches": [
-        "<all_urls>"
+        "${VITE_TAIGA_URL}"
       ],
       "js": [
-        "content.js",
-        "popup.js"
+        "content.js"
       ]
     }
   ],
@@ -30,7 +29,6 @@
     "default_popup": "popup.html"
   },
   "host_permissions": [
-    "http://*/*",
-    "https://*/*"
+    "${VITE_TAIGA_URL}"
   ]
 }
