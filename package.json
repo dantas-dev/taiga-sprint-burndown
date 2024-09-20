@@ -9,7 +9,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build --config vite.config.ts",
+    "build-manifest": "node buildManifest.js",
+    "build": "tsc && vite build && npm run build-manifest --config vite.config.ts",
     "preview": "vite preview",
     "build:extension": "npm run build && node packExtension.js"
   },

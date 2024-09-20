@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <strong>${story.name}</strong>
             <ul>
               <li>TOTAL (HR): ${checkNaN(story.totalHR)} (${checkNaN(story.remainingHours)} - ${checkNaN(story.totalPercent)}%)</li>
-              <li>CLOSED (HR): ${checkNaN(story.totalClosedHR)} / NEW CLOSED: ${checkNaN(story.totalNewHR)}</li>
+              <li>CLOSED (HR): ${checkNaN(story.totalClosedHR)} / NEW CLOSED: ${checkNaN(story.totalClosedNewHR)}</li>
               <li>TASKS (QTD): ${story.tasks.length} (CLOSED: ${story.totalClosed} / NEW: ${story.totalNew})</li>
             </ul>
           </li>
