@@ -1,4 +1,4 @@
-import { MemberTaskInfo } from "../interfaces";
+import { MemberTaskInfo, Story } from "../interfaces";
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   const { action, data } = message;
@@ -6,7 +6,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return hr.includes("NaN") ? "NOT FOUND" : hr;
   }
 
-  function clearOldData(mainTaskboard: HTMLDivElement, summary: HTMLDivElement) {
+  function clearOldData(
+    mainTaskboard: HTMLDivElement,
+    summary: HTMLDivElement
+  ) {
     if (mainTaskboard) {
       mainTaskboard.style.height = "auto";
     }
@@ -16,20 +19,30 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       summary.style.display = "flex";
       summary.style.flexDirection = "column";
 
-      const iocaineWrapper = summary.querySelector('.summary-stats.summary-iocaine') as HTMLDivElement
-      const closedTasksWrapper = summary.querySelector('.summary-stats.summary-closed-tasks') as HTMLDivElement
-      const openTasksWrapper = summary.querySelector('.summary-stats.summary-open-tasks') as HTMLDivElement
-      const moveUnfinishedWrapper = summary.querySelector('.summary-stats.summary-move-unfinished') as HTMLDivElement
-      const completedPointsWrapper = summary.querySelector('.summary-stats.summary-completed-points') as HTMLDivElement
-      const toggleAnalyticsWrapper = summary.querySelector('.stats.toggle-analytics-visibility') as HTMLDivElement
-      toggleAnalyticsWrapper.style.marginLeft = '0'
-      const largeSummaryWrapper = summary.querySelector('.large-summary-wrapper') as HTMLDivElement
+      const iocaineWrapper = summary.querySelector(
+        ".summary-stats.summary-iocaine"
+      ) as HTMLDivElement;
+      const openTasksWrapper = summary.querySelector(
+        ".summary-stats.summary-open-tasks"
+      ) as HTMLDivElement;
+      const moveUnfinishedWrapper = summary.querySelector(
+        ".summary-stats.summary-move-unfinished"
+      ) as HTMLDivElement;
+      const completedPointsWrapper = summary.querySelector(
+        ".summary-stats.summary-completed-points"
+      ) as HTMLDivElement;
+      const toggleAnalyticsWrapper = summary.querySelector(
+        ".stats.toggle-analytics-visibility"
+      ) as HTMLDivElement;
+      toggleAnalyticsWrapper.style.marginLeft = "0";
+      const largeSummaryWrapper = summary.querySelector(
+        ".large-summary-wrapper"
+      ) as HTMLDivElement;
       largeSummaryWrapper.appendChild(toggleAnalyticsWrapper);
-      iocaineWrapper.style.display = 'none'
-      closedTasksWrapper.style.display = 'none'
-      openTasksWrapper.style.display = 'none'
-      moveUnfinishedWrapper.style.border = 'none'
-      completedPointsWrapper.style.border = 'none'
+      iocaineWrapper.remove();
+      openTasksWrapper.remove();
+      moveUnfinishedWrapper.style.border = "none";
+      completedPointsWrapper.style.border = "none";
     }
 
     const pointsStats = summary.querySelector(".points-per-role-stats");
@@ -62,12 +75,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   if (action === "receiveDataInPage") {
     const {
-      squadName,
       duration,
       totalHR,
       totalClosedHR,
       totalTypes,
-      totalClosed,
       totalNew,
       remainingHours,
       totalPercent,
@@ -82,41 +93,124 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const summary = mainTaskboard.querySelector(
       ".large-summary"
     ) as HTMLDivElement;
-    const isBurndownDataWrapper = document.querySelector(
-      ".burndown-data-wrapper"
-    );
-    if (mainTaskboard && summary && !isBurndownDataWrapper) {
+    if (mainTaskboard && summary) {
       // limpeza
       clearOldData(mainTaskboard, summary);
 
-      //burndownData
-      const burndownDataWrapper = document.createElement("div");
-      burndownDataWrapper.className = "burndown-data-wrapper";
+      const mainSummaryStats = summary.querySelector(".main-summary-stats");
 
-      // duration
-      const durationWrapper = document.createElement("p");
-      durationWrapper.textContent = `Duration: ${duration}` || "NOT FOUND";
-      burndownDataWrapper.appendChild(durationWrapper);
+      const progressBarWrapper = document.querySelector(
+        ".summary-progress-wrapper"
+      );
+      const progressBar = (
+        progressBarWrapper.childNodes[1] as HTMLElement
+      ).querySelector(".current-progress") as HTMLElement;
+      const progressBarDataNumber = (
+        progressBarWrapper.childNodes[3] as HTMLElement
+      ).querySelector(".number") as HTMLElement;
+      progressBar.style.width = `${checkNaN(totalPercent)}%`;
+      progressBarDataNumber.innerText = `${checkNaN(totalPercent)}%`;
 
       // Total Hr
-      const totalHrWrapper = document.createElement("p");
-      totalHrWrapper.textContent =
-        `Total (HR): ${checkNaN(totalClosedHR)} / ${checkNaN(
-          totalHR
-        )} (${checkNaN(remainingHours)} - ${checkNaN(totalPercent)}%)` ||
-        "NOT FOUND";
-      burndownDataWrapper.appendChild(totalHrWrapper);
+      const totalHrWrapper = document.createElement("div");
+      totalHrWrapper.className = "summary-stats";
+      const totalHrNumber = document.createElement("span");
+      totalHrNumber.className = "number";
+      const totalHrDescription = document.createElement("span");
+      totalHrDescription.className = "description";
+      totalHrNumber.textContent = `${checkNaN(totalClosedHR)} / ${checkNaN(
+        totalHR
+      )}`;
+      totalHrDescription.innerHTML = `total hrs <br/>(${remainingHours} hrs remaining)`;
+      totalHrWrapper.appendChild(totalHrNumber);
+      totalHrWrapper.appendChild(totalHrDescription);
+      mainSummaryStats.insertBefore(
+        totalHrWrapper,
+        mainSummaryStats.childNodes[0]
+      );
 
       // total New Hr
-      const totalNewHrWrapper = document.createElement("p");
-      totalNewHrWrapper.textContent =
-        `Total New (HR): ${totalNewHR}` || "NOT FOUND";
-      burndownDataWrapper.appendChild(totalNewHrWrapper);
+      const newHrWrapper = document.createElement("div");
+      newHrWrapper.className = "summary-stats";
+      const newHrNumber = document.createElement("span");
+      newHrNumber.className = "number";
+      const newHrDescription = document.createElement("span");
+      newHrDescription.className = "description";
+      newHrNumber.textContent = totalNewHR;
+      newHrDescription.innerHTML = "total new<br/>(hrs)";
+      newHrWrapper.appendChild(newHrNumber);
+      newHrWrapper.appendChild(newHrDescription);
+      mainSummaryStats.insertBefore(
+        newHrWrapper,
+        mainSummaryStats.childNodes[7]
+      );
 
       // Qtd New
-      const qtdNewWrapper = document.createElement("p");
-      qtdNewWrapper.textContent = `Qtd. New: ${totalNew}` || "NOT FOUND";
-      burndownDataWrapper.appendChild(qtdNewWrapper);
+      const qtdNewWrapper = document.createElement("div");
+      qtdNewWrapper.className = "summary-stats";
+      const qtdNewNumber = document.createElement("span");
+      qtdNewNumber.className = "number";
+      const qtdNewDescription = document.createElement("span");
+      qtdNewDescription.className = "description";
+      qtdNewNumber.textContent = totalNew;
+      qtdNewDescription.innerHTML = "new<br/> tasks";
+      qtdNewWrapper.appendChild(qtdNewNumber);
+      qtdNewWrapper.appendChild(qtdNewDescription);
+      mainSummaryStats.insertBefore(
+        qtdNewWrapper,
+        mainSummaryStats.childNodes[7]
+      );
+
+      // duration
+      const durationWrapper = document.createElement("div");
+      durationWrapper.className = "summary-stats";
+      durationWrapper.style.margin = "0px";
+      const durationDescription = document.createElement("span");
+      durationDescription.className = "description";
+      durationDescription.textContent = duration;
+      durationWrapper.appendChild(durationDescription);
+      summary.insertBefore(durationWrapper, summary.childNodes[0]);
+
+      // Stories
+      const taskboardCards = document.querySelectorAll(".taskboard-us");
+      taskboardCards.forEach((taskboardCard: HTMLDivElement, index: number) => {
+        const title = taskboardCard.querySelector(".us-title") as HTMLElement;
+        const story = storys.find(
+          (story: Story) => story.name == title.innerText
+        );
+        const storyData = document.createElement("ul");
+        storyData.innerHTML = `<li>TOTAL (HR): ${checkNaN(
+          story.totalHR
+        )} (${checkNaN(story.remainingHours)} - ${checkNaN(
+          story.totalPercent
+        )}%)</li>
+          <li>CLOSED (HR): ${checkNaN(
+            story.totalClosedHR
+          )} / NEW CLOSED: ${checkNaN(story.totalNewHR)}</li>
+          <li>TASKS (QTD): ${story.tasks.length} (CLOSED: ${
+          story.totalClosed
+        } / NEW: ${story.totalNew})</li>`;
+        title.appendChild(storyData);
+        storyData.style.fontSize = "14px";
+        storyData.style.paddingTop = "1rem";
+        storyData.style.color = "#4c566a";
+        const storyRow = taskboardCard.parentElement.parentElement
+        if (storyRow.classList.contains('row-fold')) {
+          storyData.style.display = 'none'
+        } else {
+          storyData.style.display = 'block'
+        }
+        document.querySelectorAll('.folding-actions')[index].addEventListener('click', () => {          
+          if (!storyRow.classList.contains('row-fold')) {
+            storyData.style.display = 'none'
+          } else {
+            storyData.style.display = 'block'
+          }
+        })
+      });
+
+      const taskboardInner = document.querySelector('.taskboard-inner');
+      const membersWrapper = document.createElement('div')
 
       // Total Tasks
       const totalTasksWrapper = document.createElement("p");
@@ -129,65 +223,48 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       )
         .map(([key, value]) => `${key}: ${value}`)
         .join(", ")})`;
-      burndownDataWrapper.appendChild(totalTasksWrapper);
-
-      // Qtd Closed
-      const qtdClosedWrapper = document.createElement("p");
-      qtdClosedWrapper.textContent =
-        `Qtd. Closed: ${totalClosed}` || "NOT FOUND";
-      burndownDataWrapper.appendChild(qtdClosedWrapper);
-
-      const dataFlexContainer = document.createElement("div");
-      dataFlexContainer.style.display = "flex";
-      dataFlexContainer.style.gap = "1rem";
-
-      // Stories
-      const storiesWrapper = document.createElement("div");
-      const storiesList = document.createElement("ul");
-      storiesList.innerHTML = storys
-        .map(
-          (story) => `
-      <li>
-        <strong>${story.name}</strong>
-        <ul>
-          <li>TOTAL (HR): ${checkNaN(story.totalHR)} (${checkNaN(
-            story.remainingHours
-          )} - ${checkNaN(story.totalPercent)}%)</li>
-          <li>CLOSED (HR): ${checkNaN(
-            story.totalClosedHR
-          )} / NEW CLOSED: ${checkNaN(story.totalNewHR)}</li>
-          <li>TASKS (QTD): ${story.tasks.length} (CLOSED: ${
-            story.totalClosed
-          } / NEW: ${story.totalNew})</li>
-        </ul>
-      </li>
-    `
-        )
-        .join("");
-
-      storiesWrapper.appendChild(storiesList);
-      storiesWrapper.style.maxHeight = "400px";
-      storiesWrapper.style.overflow = "scroll";
-      dataFlexContainer.appendChild(storiesWrapper);
+        totalTasksWrapper.style.margin = '20px 0'
+      summary.appendChild(totalTasksWrapper);
 
       // Members info
       const membersInfoWrapper = document.createElement("div");
       const membersInfoTable = document.createElement("table");
-
+      
       membersInfoTable.innerHTML = `
       <tr>
       <th>Membro</th>
       <th>Tasks</th>
       <th>Horas</th>
       </tr>`;
-
+      
       fillMembersTable(membersInfoTable, aggregatedMembersInfo);
+      membersInfoTable.style.color = '#4c566a';
+      membersInfoTable.style.fontSize = '14px';
+      membersInfoTable.style.borderCollapse = 'collapse';
+
+      membersInfoTable.querySelectorAll('th').forEach(th => {
+        th.style.padding = '.5rem'
+        th.style.border = '1px solid #434456'
+        th.style.background = '#434456'
+        th.style.color = '#fff'
+
+      })
+      membersInfoTable.querySelectorAll('td').forEach(td => {
+        td.style.padding = '.5rem'
+        td.style.border = '1px solid #4c566a'
+      })
+      membersInfoTable.querySelectorAll('tr').forEach(tr => {
+        tr.style.padding = '.5rem'
+      })
+
       membersInfoWrapper.appendChild(membersInfoTable);
+      membersInfoWrapper.style.backgroundColor = '#f9f9fb';
+      membersInfoWrapper.style.border = '1px solid transparent';
+      membersInfoWrapper.style.borderRadius = '3px';
+      membersInfoWrapper.style.padding = '1rem';
 
-      dataFlexContainer.appendChild(membersInfoWrapper);
-      burndownDataWrapper.appendChild(dataFlexContainer);
-
-      summary.appendChild(burndownDataWrapper);
+      membersWrapper.appendChild(membersInfoWrapper)
+      taskboardInner.insertBefore(membersWrapper, taskboardInner.childNodes[5]);
     }
   }
 });
