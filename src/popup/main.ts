@@ -1,15 +1,11 @@
-import { fillMembersTable } from "./fillMembersTable";
-
-function checkNaN(hr) {
-  return hr.includes("NaN") ? "NOT FOUND" : hr;
-}
-
 function activateCopyButton() {
-  return ((document.getElementById("copyData") as HTMLInputElement).disabled =
-    false);
+  if (document.getElementById("copyData")) {
+    return ((document.getElementById("copyData") as HTMLInputElement).disabled =
+      false);
+  }
 }
 
-document.getElementById("copyData").addEventListener("click", () => {
+document.getElementById("copyData")?.addEventListener("click", () => {
   const data = document.getElementById("data").innerText || "NOT FOUND";
   const membersInfo =
     document.getElementById("members-info").innerText || "NOT FOUND";
@@ -33,46 +29,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("refresh").addEventListener("click", () => {
-    chrome.runtime.sendMessage(
-      { action: "getData" },
-      ({
-        squadName,
-        duration,
-        totalHR,
-        totalClosedHR,
-        totalTypes,
-        totalClosed,
-        totalNew,
-        remainingHours,
-        totalPercent,
-        storys,
-        aggregatedMembersInfo,
-        totalNewHR,
-      }) => {
-        activateCopyButton();
-
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-          const activeTab = tabs[0];
-
-          chrome.tabs.sendMessage(activeTab.id, {
-            action: "receiveDataInPage",
-            data: {
-              squadName,
-              duration,
-              totalHR,
-              totalClosedHR,
-              totalTypes,
-              totalClosed,
-              totalNew,
-              remainingHours,
-              totalPercent,
-              storys,
-              aggregatedMembersInfo,
-              totalNewHR,
-            },
-          });
-        });
-      }
-    );
+    chrome.runtime.sendMessage({ action: "getData" }, () => {
+      activateCopyButton();
+    });
   });
 });
