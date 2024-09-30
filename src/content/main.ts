@@ -6,9 +6,10 @@ import { getStorys } from "./story/getStorys";
 import { sumStorys } from "./story/sumStorys";
 import { parseTime } from "./time/parseTime";
 import { subtractTimes } from "./time/subtractTimes";
+import { getSquadName } from "./squad/getSquadName";
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  function checkNaN(hr) {
+  function checkNaN(hr: string) {
     return hr.includes("NaN") ? "NOT FOUND" : hr;
   }
   function clearOldData(
@@ -23,7 +24,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       summary.style.overflow = "visible";
       summary.style.display = "flex";
       summary.style.flexDirection = "column";
-  
+
       const iocaineWrapper = summary.querySelector(
         ".summary-stats.summary-iocaine"
       ) as HTMLDivElement;
@@ -49,7 +50,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       moveUnfinishedWrapper.style.border = "none";
       completedPointsWrapper.style.border = "none";
     }
-  
+
     const pointsStats = summary.querySelector(".points-per-role-stats");
     if (pointsStats) {
       pointsStats.remove();
@@ -77,6 +78,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     });
   }
   if (message.action === "getData") {
+    const squadName = getSquadName();
     const duration = getDuration();
     const storys = getStorys();
     const {
@@ -101,6 +103,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const summary = mainTaskboard.querySelector(
       ".large-summary"
     ) as HTMLDivElement;
+
+    let totalTasks = '';
+    let totalStories = '';
+    let membersInfoText = '';
     if (mainTaskboard && summary) {
       // limpeza
       clearOldData(mainTaskboard, summary);
@@ -119,10 +125,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       progressBar.style.width = `${checkNaN(totalPercent)}%`;
       progressBarDataNumber.innerText = `${checkNaN(totalPercent)}%`;
 
+      //Total Closed
+      const totalClosedWrapper = document.querySelector(
+        ".summary-closed-tasks"
+      );
+      const totalClosedNumber = totalClosedWrapper.childNodes[0] as HTMLElement;
+      totalClosedNumber.innerText = `${totalClosed}`;
+
       // Total Hr
       const totalHrWrapper = document.createElement("div");
       totalHrWrapper.className = "summary-stats";
       const totalHrNumber = document.createElement("span");
+      totalHrNumber.id = "total-hr";
       totalHrNumber.className = "number";
       const totalHrDescription = document.createElement("span");
       totalHrDescription.className = "description";
@@ -142,6 +156,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       newHrWrapper.className = "summary-stats";
       const newHrNumber = document.createElement("span");
       newHrNumber.className = "number";
+      newHrNumber.id = "qtd-new-hr";
       const newHrDescription = document.createElement("span");
       newHrDescription.className = "description";
       newHrNumber.textContent = totalNewHR;
@@ -157,6 +172,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       const qtdNewWrapper = document.createElement("div");
       qtdNewWrapper.className = "summary-stats";
       const qtdNewNumber = document.createElement("span");
+      qtdNewNumber.id = "qtd-new";
       qtdNewNumber.className = "number";
       const qtdNewDescription = document.createElement("span");
       qtdNewDescription.className = "description";
@@ -174,6 +190,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       durationWrapper.className = "summary-stats";
       durationWrapper.style.margin = "0px";
       const durationDescription = document.createElement("span");
+      durationDescription.id = "duration";
       durationDescription.className = "description";
       durationDescription.textContent = duration;
       durationWrapper.appendChild(durationDescription);
@@ -187,6 +204,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           (story: Story) => story.name == title.innerText
         );
         const storyData = document.createElement("ul");
+        storyData.id = "stories";
         storyData.innerHTML = `<li>TOTAL (HR): ${checkNaN(
           story.totalHR
         )} (${checkNaN(story.remainingHours)} - ${checkNaN(
@@ -203,6 +221,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         storyData.style.paddingTop = "1rem";
         storyData.style.color = "#4c566a";
         const storyRow = taskboardCard.parentElement.parentElement;
+        totalStories += story.name.replace('\n', ' ') + '\n' + storyData.innerText + '\n'
         if (storyRow.classList.contains("row-fold")) {
           storyData.style.display = "none";
         } else {
@@ -224,21 +243,24 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
       // Total Tasks
       const totalTasksWrapper = document.createElement("p");
+      totalTasksWrapper.id = "qtd-total";
       const totalOfTotalTypes = Object.values(totalTypes).reduce(
         (acc: number, curr: number) => acc + curr,
         0
       );
-      totalTasksWrapper.textContent = `Tasks: ${totalOfTotalTypes} (${Object.entries(
+      totalTasks = `${totalOfTotalTypes} (${Object.entries(
         totalTypes
       )
         .map(([key, value]) => `${key}: ${value}`)
         .join(", ")})`;
+      totalTasksWrapper.textContent = `Tasks: ${totalTasks}`;
       totalTasksWrapper.style.margin = "20px 0";
       summary.appendChild(totalTasksWrapper);
 
       // Members info
       const membersInfoWrapper = document.createElement("div");
       const membersInfoTable = document.createElement("table");
+      membersInfoTable.id = "members-info";
 
       membersInfoTable.innerHTML = `
       <tr>
@@ -265,16 +287,33 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       membersInfoTable.querySelectorAll("tr").forEach((tr) => {
         tr.style.padding = ".5rem";
       });
-
+      
       membersInfoWrapper.appendChild(membersInfoTable);
       membersInfoWrapper.style.backgroundColor = "#f9f9fb";
       membersInfoWrapper.style.border = "1px solid transparent";
       membersInfoWrapper.style.borderRadius = "3px";
       membersInfoWrapper.style.padding = "1rem";
-
+      
       membersWrapper.appendChild(membersInfoWrapper);
       taskboardInner.insertBefore(membersWrapper, taskboardInner.childNodes[5]);
     }
-    sendResponse({ success: true });
+
+    sendResponse({
+      squadName,
+      duration,
+      storys,
+      totalHR,
+      totalTypes,
+      totalClosed,
+      totalNew,
+      totalClosedHR,
+      totalPercent,
+      remainingHours,
+      aggregatedMembersInfo,
+      totalNewHR,
+      totalTasks,
+      totalStories,
+      membersInfoText,
+    });
   }
 });

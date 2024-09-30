@@ -1,18 +1,13 @@
 function activateCopyButton() {
+  console.log(document.getElementById("copyData"));
+
   if (document.getElementById("copyData")) {
+    console.log("here");
+
     return ((document.getElementById("copyData") as HTMLInputElement).disabled =
       false);
   }
 }
-
-document.getElementById("copyData")?.addEventListener("click", () => {
-  const data = document.getElementById("data").innerText || "NOT FOUND";
-  const membersInfo =
-    document.getElementById("members-info").innerText || "NOT FOUND";
-
-  const allFields = `${data}\n\n${membersInfo}`;
-  navigator.clipboard.writeText(allFields);
-});
 
 document.addEventListener("DOMContentLoaded", () => {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -29,8 +24,42 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("refresh").addEventListener("click", () => {
-    chrome.runtime.sendMessage({ action: "getData" }, () => {
-      activateCopyButton();
-    });
+    chrome.runtime.sendMessage(
+      { action: "getData" },
+      ({
+        squadName,
+        duration,
+        totalHR,
+        totalClosedHR,
+        totalTypes,
+        totalClosed,
+        totalNew,
+        remainingHours,
+        totalPercent,
+        storys,
+        aggregatedMembersInfo,
+        totalNewHR,
+        totalTasks,
+        totalStories,
+      }) => {
+        (
+          document.getElementById("copyData") as HTMLInputElement
+        ).addEventListener("click", () => {
+          const allFields = 
+        `Data: ${new Date().toLocaleDateString("pt-br")}\n`+
+        `SQUAD: ${squadName}\n`+
+        `DURATION: ${duration}\n`+
+        `TOTAL (HR): ${totalClosedHR} / ${totalHR} (${remainingHours} - ${totalPercent}%)\n`+
+        `TOTAL NEW (HR): ${totalNewHR}\n`+
+        `TOTAL (TASKS): ${totalTasks}\n`+
+        `QTD. CLOSED: ${totalClosed}\n`+
+        `QTD. NEW: ${totalNew}\n`+
+        `STORIES\n${totalStories}\n\n`
+      ;
+          navigator.clipboard.writeText(allFields);
+        });
+        activateCopyButton();
+      }
+    );
   });
 });
