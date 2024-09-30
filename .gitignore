@@ -24,3 +24,5 @@ pack_chrome
 *.njsproj
 *.sln
 *.sw?
+
+key.pem
