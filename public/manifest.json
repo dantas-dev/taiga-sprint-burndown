@@ -21,7 +21,8 @@
         "${VITE_TAIGA_URL}"
       ],
       "js": [
-        "content.js"
+        "content.js",
+        "popup.js"
       ]
     }
   ],

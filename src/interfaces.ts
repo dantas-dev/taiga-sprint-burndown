@@ -33,7 +33,7 @@ export interface TotalTaskInfo {
 
 export interface SumStorys {
     totalHR: string,
-    totalTypes: {[key: string]: string},
+    totalTypes: any,
     totalClosed: number,
     totalNew: number,
     totalClosedHR: string
