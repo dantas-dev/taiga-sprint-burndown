@@ -9,8 +9,7 @@
   },
   "permissions": [
     "activeTab",
-    "tabs",
-    "scripting"
+    "tabs"
   ],
   "background": {
     "service_worker": "background.js"
