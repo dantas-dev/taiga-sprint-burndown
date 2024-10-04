@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 pack_chrome
+.env
 
 # Editor directories and files
 .vscode/*
@@ -23,3 +24,5 @@ pack_chrome
 *.njsproj
 *.sln
 *.sw?
+
+key.pem
