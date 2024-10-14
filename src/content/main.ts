@@ -68,12 +68,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       const memberCell = document.createElement("td");
       memberCell.textContent = member.member;
       row.appendChild(memberCell);
-      const tasksCell = document.createElement("td");
-      tasksCell.textContent = member.tasks.toString();
-      row.appendChild(tasksCell);
       const hoursCell = document.createElement("td");
       hoursCell.textContent = member.hours;
+      const tasksCell = document.createElement("td");
+      tasksCell.textContent = member.tasks.toString();
       row.appendChild(hoursCell);
+      row.appendChild(tasksCell);
       table.appendChild(row);
     });
   }
@@ -265,8 +265,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       membersInfoTable.innerHTML = `
       <tr>
       <th>Membro</th>
-      <th>Tasks</th>
       <th>Horas</th>
+      <th>Tasks</th>
       </tr>`;
 
       fillMembersTable(membersInfoTable, aggregatedMembersInfo);
