@@ -7,76 +7,15 @@ import { sumStorys } from "./story/sumStorys";
 import { parseTime } from "./time/parseTime";
 import { subtractTimes } from "./time/subtractTimes";
 import { getSquadName } from "./squad/getSquadName";
+import { fillMembersTable } from "./member/fillMembersTable";
+import { clearOldData } from "./clearOldData";
+import { fillStoriesInfo } from "./story/fillStoriesInfo";
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   function checkNaN(hr: string) {
     return hr.includes("NaN") ? "NOT FOUND" : hr;
   }
-  function clearOldData(
-    mainTaskboard: HTMLDivElement,
-    summary: HTMLDivElement
-  ) {
-    if (mainTaskboard) {
-      mainTaskboard.style.height = "auto";
-    }
-    if (summary) {
-      summary.style.height = "auto";
-      summary.style.overflow = "visible";
-      summary.style.display = "flex";
-      summary.style.flexDirection = "column";
 
-      const iocaineWrapper = summary.querySelector(
-        ".summary-stats.summary-iocaine"
-      ) as HTMLDivElement;
-      const openTasksWrapper = summary.querySelector(
-        ".summary-stats.summary-open-tasks"
-      ) as HTMLDivElement;
-      const moveUnfinishedWrapper = summary.querySelector(
-        ".summary-stats.summary-move-unfinished"
-      ) as HTMLDivElement;
-      const completedPointsWrapper = summary.querySelector(
-        ".summary-stats.summary-completed-points"
-      ) as HTMLDivElement;
-      const toggleAnalyticsWrapper = summary.querySelector(
-        ".stats.toggle-analytics-visibility"
-      ) as HTMLDivElement;
-      toggleAnalyticsWrapper.style.marginLeft = "0";
-      const largeSummaryWrapper = summary.querySelector(
-        ".large-summary-wrapper"
-      ) as HTMLDivElement;
-      largeSummaryWrapper.appendChild(toggleAnalyticsWrapper);
-      iocaineWrapper.remove();
-      openTasksWrapper.remove();
-      moveUnfinishedWrapper.style.border = "none";
-      completedPointsWrapper.style.border = "none";
-    }
-
-    const pointsStats = summary.querySelector(".points-per-role-stats");
-    if (pointsStats) {
-      pointsStats.remove();
-    }
-  }
-  function fillMembersTable(
-    table: HTMLTableElement,
-    membersInfo: MemberTaskInfo[]
-  ) {
-    table
-      .querySelectorAll("tr:not(:first-child)")
-      .forEach((row) => row.remove());
-    membersInfo.forEach((member) => {
-      const row = document.createElement("tr");
-      const memberCell = document.createElement("td");
-      memberCell.textContent = member.member;
-      row.appendChild(memberCell);
-      const tasksCell = document.createElement("td");
-      tasksCell.textContent = member.tasks.toString();
-      row.appendChild(tasksCell);
-      const hoursCell = document.createElement("td");
-      hoursCell.textContent = member.hours;
-      row.appendChild(hoursCell);
-      table.appendChild(row);
-    });
-  }
   if (message.action === "getData") {
     const squadName = getSquadName();
     const duration = getDuration();
@@ -104,11 +43,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       ".large-summary"
     ) as HTMLDivElement;
 
-    let totalTasks = '';
-    let totalStories = '';
-    let membersInfoText = '';
+    let totalTasks = "";
+    let totalStories = "";
+    let membersInfoText = "";
     if (mainTaskboard && summary) {
-      // limpeza
       clearOldData(mainTaskboard, summary);
 
       const mainSummaryStats = summary.querySelector(".main-summary-stats");
@@ -125,14 +63,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       progressBar.style.width = `${checkNaN(totalPercent)}%`;
       progressBarDataNumber.innerText = `${checkNaN(totalPercent)}%`;
 
-      //Total Closed
+      // =-=-=-=-= Total Closed =-=-=-=-=
       const totalClosedWrapper = document.querySelector(
         ".summary-closed-tasks"
       );
       const totalClosedNumber = totalClosedWrapper.childNodes[0] as HTMLElement;
       totalClosedNumber.innerText = `${totalClosed}`;
 
-      // Total Hr
+
+      // =-=-=-=-= Total Hr =-=-=-=-=
       const totalHrWrapper = document.createElement("div");
       totalHrWrapper.className = "summary-stats";
       const totalHrNumber = document.createElement("span");
@@ -151,7 +90,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         mainSummaryStats.childNodes[0]
       );
 
-      // total New Hr
+
+      // =-=-=-=-= total New Hr =-=-=-=-=
       const newHrWrapper = document.createElement("div");
       newHrWrapper.className = "summary-stats";
       const newHrNumber = document.createElement("span");
@@ -168,7 +108,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         mainSummaryStats.childNodes[7]
       );
 
-      // Qtd New
+
+      // =-=-=-=-= Qtd New =-=-=-=-=
       const qtdNewWrapper = document.createElement("div");
       qtdNewWrapper.className = "summary-stats";
       const qtdNewNumber = document.createElement("span");
@@ -185,7 +126,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         mainSummaryStats.childNodes[7]
       );
 
-      // duration
+
+      // =-=-=-=-= Duration =-=-=-=-=
       const durationWrapper = document.createElement("div");
       durationWrapper.className = "summary-stats";
       durationWrapper.style.margin = "0px";
@@ -196,106 +138,92 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       durationWrapper.appendChild(durationDescription);
       summary.insertBefore(durationWrapper, summary.childNodes[0]);
 
-      // Stories
-      const taskboardCards = document.querySelectorAll(".taskboard-us");
-      taskboardCards.forEach((taskboardCard: HTMLDivElement, index: number) => {
-        const title = taskboardCard.querySelector(".us-title") as HTMLElement;
-        const story = storys.find(
-          (story: Story) => story.name == title.innerText
-        );
-        const storyData = document.createElement("ul");
-        storyData.id = "stories";
-        storyData.innerHTML = `<li>TOTAL (HR): ${checkNaN(
-          story.totalHR
-        )} (${checkNaN(story.remainingHours)} - ${checkNaN(
-          story.totalPercent
-        )}%)</li>
-          <li>CLOSED (HR): ${checkNaN(
-            story.totalClosedHR
-          )} / NEW CLOSED: ${checkNaN(story.totalNewHR)}</li>
-          <li>TASKS (QTD): ${story.tasks.length} (CLOSED: ${
-          story.totalClosed
-        } / NEW: ${story.totalNew})</li>`;
-        title.appendChild(storyData);
-        storyData.style.fontSize = "14px";
-        storyData.style.paddingTop = "1rem";
-        storyData.style.color = "#4c566a";
-        const storyRow = taskboardCard.parentElement.parentElement;
-        totalStories += story.name.replace('\n', ' ') + '\n' + storyData.innerText + '\n'
-        if (storyRow.classList.contains("row-fold")) {
-          storyData.style.display = "none";
-        } else {
-          storyData.style.display = "block";
-        }
-        document
-          .querySelectorAll(".folding-actions")
-          [index].addEventListener("click", () => {
-            if (!storyRow.classList.contains("row-fold")) {
-              storyData.style.display = "none";
-            } else {
-              storyData.style.display = "block";
-            }
-          });
-      });
+
+      // =-=-=-=-= Stories =-=-=-=-=
+      fillStoriesInfo(storys, totalStories);
 
       const taskboardInner = document.querySelector(".taskboard-inner");
-      const membersWrapper = document.createElement("div");
 
-      // Total Tasks
-      const totalTasksWrapper = document.createElement("p");
-      totalTasksWrapper.id = "qtd-total";
-      const totalOfTotalTypes = Object.values(totalTypes).reduce(
-        (acc: number, curr: number) => acc + curr,
-        0
-      );
-      totalTasks = `${totalOfTotalTypes} (${Object.entries(
-        totalTypes
-      )
-        .map(([key, value]) => `${key}: ${value}`)
-        .join(", ")})`;
-      totalTasksWrapper.textContent = `Tasks: ${totalTasks}`;
-      totalTasksWrapper.style.margin = "20px 0";
-      summary.appendChild(totalTasksWrapper);
 
-      // Members info
-      const membersInfoWrapper = document.createElement("div");
+      // =-=-=-=-= Members info =-=-=-=-=
+      const tasksProductivityContainer = document.createElement("div");
+      tasksProductivityContainer.style.padding = "1rem";
+      tasksProductivityContainer.style.backgroundColor = "#f9f9fb";
+
+      const tasksProductivityWrapper = document.createElement("div");
       const membersInfoTable = document.createElement("table");
       membersInfoTable.id = "members-info";
 
-      membersInfoTable.innerHTML = `
-      <tr>
-      <th>Membro</th>
-      <th>Tasks</th>
-      <th>Horas</th>
-      </tr>`;
+      const membersInfoTitle = document.createElement(
+        "h3"
+      ) as HTMLHeadingElement;
+      membersInfoTitle.textContent = "Produtividade Membros";
+      membersInfoTitle.style.color = "#008aa8";
+      membersInfoTitle.style.padding = "0 0 0.5rem";
+      membersInfoTitle.style.fontFamily = "Ubuntu-Medium";
+      membersInfoTitle.style.fontSize = "22.4px";
 
       fillMembersTable(membersInfoTable, aggregatedMembersInfo);
       membersInfoTable.style.color = "#4c566a";
       membersInfoTable.style.fontSize = "14px";
       membersInfoTable.style.borderCollapse = "collapse";
 
-      membersInfoTable.querySelectorAll("th").forEach((th) => {
-        th.style.padding = ".5rem";
-        th.style.border = "1px solid #434456";
-        th.style.background = "#434456";
-        th.style.color = "#fff";
-      });
       membersInfoTable.querySelectorAll("td").forEach((td) => {
-        td.style.padding = ".5rem";
-        td.style.border = "1px solid #4c566a";
+        td.style.paddingRight = ".5rem";
+        td.style.paddingBottom = ".5rem";
       });
-      membersInfoTable.querySelectorAll("tr").forEach((tr) => {
-        tr.style.padding = ".5rem";
-      });
-      
+
+      const membersInfoWrapper = document.createElement("div") as HTMLDivElement;
+
+      membersInfoWrapper.appendChild(membersInfoTitle);
       membersInfoWrapper.appendChild(membersInfoTable);
-      membersInfoWrapper.style.backgroundColor = "#f9f9fb";
-      membersInfoWrapper.style.border = "1px solid transparent";
-      membersInfoWrapper.style.borderRadius = "3px";
-      membersInfoWrapper.style.padding = "1rem";
+
+      tasksProductivityWrapper.appendChild(membersInfoWrapper)
+      tasksProductivityWrapper.style.backgroundColor = "#fff";
+      tasksProductivityWrapper.style.borderRadius = "3px";
+      tasksProductivityWrapper.style.padding = "1rem";
+      tasksProductivityWrapper.style.display = "flex";
+      tasksProductivityWrapper.style.gap = "5rem";
+
       
-      membersWrapper.appendChild(membersInfoWrapper);
-      taskboardInner.insertBefore(membersWrapper, taskboardInner.childNodes[5]);
+      // =-=-=-=-= Total Tasks =-=-=-=-=
+      const totalTasksTitle = document.createElement(
+        "h3"
+      ) as HTMLHeadingElement;
+      totalTasksTitle.style.color = "#008aa8";
+      totalTasksTitle.style.padding = "0 0 0.5rem";
+      totalTasksTitle.style.fontFamily = "Ubuntu-Medium";
+      totalTasksTitle.style.fontSize = "22.4px";
+      
+      const totalTasksWrapper = document.createElement("div");
+      const totalTasksList = document.createElement("ul");
+      totalTasksList.style.display = 'flex';
+      totalTasksList.style.flexDirection = 'column';
+      totalTasksList.style.gap = '.5rem';
+      totalTasksList.style.maxHeight = '100px';
+      totalTasksList.style.flexWrap = 'wrap';
+      totalTasksList.style.maxHeight = '100px';
+      totalTasksList.style.fontSize = '14px';
+      totalTasksList.style.color = '#4c566a';
+      totalTasksWrapper.id = "qtd-total";
+      const totalOfTotalTypes = Object.values(totalTypes).reduce(
+        (acc: number, curr: number) => acc + curr,
+        0
+      );
+      totalTasksTitle.textContent = `Tasks (${totalOfTotalTypes})`;
+      totalTasksList.innerHTML = `${Object.entries(totalTypes)
+        .map(([key, value]) => `<li>${key}: ${value}</li>`).join(' ')}`;
+
+      totalTasksWrapper.appendChild(totalTasksTitle)
+      totalTasksWrapper.appendChild(totalTasksList)
+
+      tasksProductivityWrapper.appendChild(totalTasksWrapper)
+      
+      tasksProductivityContainer.appendChild(tasksProductivityWrapper);
+      taskboardInner.insertBefore(
+        tasksProductivityContainer,
+        taskboardInner.childNodes[5]
+      );
     }
 
     sendResponse({
