@@ -12,6 +12,27 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   function checkNaN(hr: string) {
     return hr.includes("NaN") ? "NOT FOUND" : hr;
   }
+  function conditionalRemoveElement(id: string) {
+    const element = document.querySelector(id);
+    if (element) {
+      element.remove();
+    }
+  }
+
+  function clearElements() {
+    conditionalRemoveElement('#duration');
+    conditionalRemoveElement('#total-hr');
+    conditionalRemoveElement('#qtd-new-wrapper');
+    conditionalRemoveElement('#qtd-new-hr-wrapper');
+    conditionalRemoveElement('#total-hr-wrapper');
+    conditionalRemoveElement('#qtd-total');
+    conditionalRemoveElement('#members-info-wrapper');
+    const stories = Array.from(document.querySelectorAll('#stories'));
+    stories.forEach((element) => {
+      element.remove();
+    });
+  }
+
   function clearOldData(
     mainTaskboard: HTMLDivElement,
     summary: HTMLDivElement
@@ -45,8 +66,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         ".large-summary-wrapper"
       ) as HTMLDivElement;
       largeSummaryWrapper.appendChild(toggleAnalyticsWrapper);
-      iocaineWrapper.remove();
-      openTasksWrapper.remove();
+      if (iocaineWrapper && openTasksWrapper) {
+        iocaineWrapper.remove();
+        openTasksWrapper.remove();
+      }
       moveUnfinishedWrapper.style.border = "none";
       completedPointsWrapper.style.border = "none";
     }
@@ -78,6 +101,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     });
   }
   if (message.action === "getData") {
+    clearElements();
     const squadName = getSquadName();
     const duration = getDuration();
     const storys = getStorys();
@@ -90,7 +114,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       totalNewHR,
     } = sumStorys(storys);
     const aggregatedMembersInfo = aggregateMembersInfo(storys);
-
     const totalPercent = calculatePercentage(
       parseTime(totalClosedHR),
       parseTime(totalHR)
@@ -135,6 +158,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       // Total Hr
       const totalHrWrapper = document.createElement("div");
       totalHrWrapper.className = "summary-stats";
+      totalHrWrapper.id = "total-hr-wrapper";
       const totalHrNumber = document.createElement("span");
       totalHrNumber.id = "total-hr";
       totalHrNumber.className = "number";
@@ -154,6 +178,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       // total New Hr
       const newHrWrapper = document.createElement("div");
       newHrWrapper.className = "summary-stats";
+      newHrWrapper.id = "qtd-new-hr-wrapper";
       const newHrNumber = document.createElement("span");
       newHrNumber.className = "number";
       newHrNumber.id = "qtd-new-hr";
@@ -171,6 +196,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       // Qtd New
       const qtdNewWrapper = document.createElement("div");
       qtdNewWrapper.className = "summary-stats";
+      qtdNewWrapper.id = "qtd-new-wrapper";
       const qtdNewNumber = document.createElement("span");
       qtdNewNumber.id = "qtd-new";
       qtdNewNumber.className = "number";
@@ -259,6 +285,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
       // Members info
       const membersInfoWrapper = document.createElement("div");
+      membersInfoWrapper.id = 'members-info-wrapper';
       const membersInfoTable = document.createElement("table");
       membersInfoTable.id = "members-info";
 

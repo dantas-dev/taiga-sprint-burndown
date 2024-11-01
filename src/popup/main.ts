@@ -1,9 +1,7 @@
+import { renderMembersInfos } from "./helpers";
+
 function activateCopyButton() {
-  console.log(document.getElementById("copyData"));
-
   if (document.getElementById("copyData")) {
-    console.log("here");
-
     return ((document.getElementById("copyData") as HTMLInputElement).disabled =
       false);
   }
@@ -54,7 +52,8 @@ document.addEventListener("DOMContentLoaded", () => {
         `TOTAL (TASKS): ${totalTasks}\n`+
         `QTD. CLOSED: ${totalClosed}\n`+
         `QTD. NEW: ${totalNew}\n`+
-        `STORIES\n${totalStories}\n\n`
+        `STORIES\n${totalStories}\n\n`+
+        `PRODUTIVIDADE DA SQUAD: \n${renderMembersInfos(aggregatedMembersInfo)}`
       ;
           navigator.clipboard.writeText(allFields);
         });

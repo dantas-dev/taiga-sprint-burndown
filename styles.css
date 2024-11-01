@@ -24,7 +24,7 @@ img {
 }
 
 body {
-  min-width: 500px;
+  min-width: 350px;
   text-align: center;
 }
 
@@ -35,10 +35,74 @@ h1 {
 /* custom css */
 body {
   padding: 20px;
+  position: relative;
+  #badge {
+    position: absolute;
+    width: 0;
+    height: 0;
+    bottom: 65%;
+    left: 75%;
+    border-top: 100px solid #0096FF;
+    border-left: 100px solid transparent;
+  }
+}
+
+.wrapper {
+  display: grid;
+  grid-template-columns: 3fr auto;
 }
 
 .dantinhas {
-  margin-bottom: 10px;
+  margin: 10px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  place-self: start;
+  font-family: sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  gap: 3px;
+  padding: 4px 8px;
+  border-top: 6px solid #0096FF;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+
+  li {
+    display: block;
+    margin-left: 8px;
+    font-size: 12px;
+    padding: 4px 8px;
+
+    img {
+      width: 12px;
+      height: 12px;
+      margin-right: 5px;
+    }
+  }
+}
+
+#copyData {
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  place-self: center;
+  background-color: #0096FF;
+  color: #FFF;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  border-radius: 8px;
+  padding: 12px 8px;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 16px;
+  border: none;
+
+  &:disabled {
+    cursor: not-allowed;
+    background-color: #677782;
+  }
+
+  img {
+    width: 18px;
+  }
 }
 
 #error {
