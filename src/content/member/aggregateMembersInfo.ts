@@ -3,14 +3,14 @@ import { formatTime } from "../time/formatTime";
 import { parseTime } from "../time/parseTime";
 
 export function aggregateMembersInfo(storys: Story[]): MemberTaskInfo[] {
-  const memberMap: { [member: string]: { member: string; hours: number; tasks: number } } = {};
+  const memberMap: { [member: string]: { member: string; img: string; hours: number; tasks: number } } = {};
 
   storys.forEach(story => {
     story.tasks.forEach(task => {
-      const { assignedTo, hours, isClosed } = task;
+      const { assignedTo, hours, isClosed, memberImageUrl } = task;
       if (assignedTo !== 'Not assigned' && isClosed) {
         if (!memberMap[assignedTo]) {
-          memberMap[assignedTo] = { member: assignedTo, hours: 0, tasks: 0 };
+          memberMap[assignedTo] = { member: assignedTo, img: memberImageUrl, hours: 0, tasks: 0 };
         }
         memberMap[assignedTo].hours += parseTime(hours);
         memberMap[assignedTo].tasks += 1;
@@ -26,8 +26,9 @@ export function aggregateMembersInfo(storys: Story[]): MemberTaskInfo[] {
     }
     return b.tasks - a.tasks;
   })
-  .map(({ member, hours, tasks }) => ({
+  .map(({ member, img, hours, tasks }) => ({
     member,
+    img,
     hours: formatTime(hours),
     tasks
   }));
