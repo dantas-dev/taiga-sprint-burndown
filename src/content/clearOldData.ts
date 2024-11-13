@@ -31,8 +31,10 @@ export function clearOldData(
       ".large-summary-wrapper"
     ) as HTMLDivElement;
     largeSummaryWrapper.appendChild(toggleAnalyticsWrapper);
-    iocaineWrapper.remove();
-    openTasksWrapper.remove();
+    if (iocaineWrapper && openTasksWrapper) {
+      iocaineWrapper.remove();
+      openTasksWrapper.remove();
+    }
     moveUnfinishedWrapper.style.border = "none";
     completedPointsWrapper.style.border = "none";
   }

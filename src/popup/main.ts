@@ -14,14 +14,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!allowedUrls.some((url) => currentUrl.includes(url))) {
       document.getElementById("error").style.display = "block";
-      document.getElementById("content").style.display = "none";
+      document.getElementById("copyData").style.display = "none";
     } else {
-      document.getElementById("content").style.display = "block";
+      document.getElementById("copyData").style.display = "block";
       document.getElementById("error").style.display = "none";
     }
   });
 
-  
   chrome.runtime.sendMessage(
     { action: "getData" },
     ({

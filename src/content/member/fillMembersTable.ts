@@ -4,9 +4,6 @@ export function fillMembersTable(
   table: HTMLTableElement,
   membersInfo: MemberTaskInfo[]
 ) {
-  table
-    .querySelectorAll("tr:not(:first-child)")
-    .forEach((row) => row.remove());
   membersInfo.forEach((member) => {
     const row = document.createElement("tr");
     row.style.display = "flex";
