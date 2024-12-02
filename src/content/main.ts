@@ -224,6 +224,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         tasksProductivityContainer,
         taskboardInner.childNodes[5]
       );
+      totalTasks += `${totalOfTotalTypes} (${Object.entries(totalTypes)
+        .map(([key, value]) => `${key}: ${value}`).join(', ')})`;
     }
 
     sendResponse({
