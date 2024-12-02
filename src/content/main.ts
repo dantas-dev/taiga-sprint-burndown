@@ -10,6 +10,11 @@ import { getSquadName } from "./squad/getSquadName";
 import { fillMembersTable } from "./member/fillMembersTable";
 import { clearOldData } from "./clearOldData";
 import { fillStoriesInfo } from "./story/fillStoriesInfo";
+import { createTotalHrWrapper } from "./layout/totalHr";
+import { createTotalNewHRWrapper } from "./layout/totalNewHr";
+import { createQtdNewWrapper } from "./layout/qtdNew";
+import { createDurationWrapper } from "./layout/duration";
+import { updateTotalClosedWrapper } from "./layout/totalClosed";
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   function checkNaN(hr: string) {
@@ -83,100 +88,27 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       progressBar.style.width = `${checkNaN(totalPercent)}%`;
       progressBarDataNumber.innerText = `${checkNaN(totalPercent)}%`;
 
-      // =-=-=-=-= Total Closed =-=-=-=-=
-      const totalClosedWrapper = document.querySelector(
-        ".summary-closed-tasks"
-      );
-      const totalClosedNumber = totalClosedWrapper.childNodes[0] as HTMLElement;
-      totalClosedNumber.innerText = `${totalClosed}`;
+      updateTotalClosedWrapper(totalClosed);
 
-
-      // =-=-=-=-= Total Hr =-=-=-=-=
-      const totalHrWrapper = document.createElement("div");
-      totalHrWrapper.className = "summary-stats";
-      totalHrWrapper.id = "total-hr-wrapper";
-      const totalHrNumber = document.createElement("span");
-      totalHrNumber.id = "total-hr";
-      totalHrNumber.className = "number";
-      const totalHrDescription = document.createElement("span");
-      totalHrDescription.className = "description";
-      totalHrNumber.textContent = `${checkNaN(totalClosedHR)} / ${checkNaN(
-        totalHR
-      )}`;
-      totalHrDescription.innerHTML = `total hrs <br/>(${remainingHours} hrs remaining)`;
-      totalHrWrapper.appendChild(totalHrNumber);
-      totalHrWrapper.appendChild(totalHrDescription);
-      mainSummaryStats.insertBefore(
-        totalHrWrapper,
-        mainSummaryStats.childNodes[0]
+      createTotalHrWrapper(
+        mainSummaryStats,
+        totalClosedHR,
+        totalHR,
+        remainingHours
       );
 
+      createTotalNewHRWrapper(mainSummaryStats, totalNewHR);
 
-      // =-=-=-=-= total New Hr =-=-=-=-=
-      const newHrWrapper = document.createElement("div");
-      newHrWrapper.className = "summary-stats";
-      newHrWrapper.id = "qtd-new-hr-wrapper";
-      const newHrNumber = document.createElement("span");
-      newHrNumber.className = "number";
-      newHrNumber.id = "qtd-new-hr";
-      const newHrDescription = document.createElement("span");
-      newHrDescription.className = "description";
-      newHrNumber.textContent = totalNewHR;
-      newHrDescription.innerHTML = "total new<br/>(hrs)";
-      newHrWrapper.appendChild(newHrNumber);
-      newHrWrapper.appendChild(newHrDescription);
-      mainSummaryStats.insertBefore(
-        newHrWrapper,
-        mainSummaryStats.childNodes[7]
-      );
+      createQtdNewWrapper(mainSummaryStats, totalNew);
 
-
-      // =-=-=-=-= Qtd New =-=-=-=-=
-      const qtdNewWrapper = document.createElement("div");
-      qtdNewWrapper.className = "summary-stats";
-      qtdNewWrapper.id = "qtd-new-wrapper";
-      const qtdNewNumber = document.createElement("span");
-      qtdNewNumber.id = "qtd-new";
-      qtdNewNumber.className = "number";
-      const qtdNewDescription = document.createElement("span");
-      qtdNewDescription.className = "description";
-      qtdNewNumber.textContent = `${totalNew}`;
-      qtdNewDescription.innerHTML = "new<br/> tasks";
-      qtdNewWrapper.appendChild(qtdNewNumber);
-      qtdNewWrapper.appendChild(qtdNewDescription);
-      mainSummaryStats.insertBefore(
-        qtdNewWrapper,
-        mainSummaryStats.childNodes[7]
-      );
-
-
-      // =-=-=-=-= Duration =-=-=-=-=
-      const durationWrapper = document.createElement("div");
-      durationWrapper.className = "summary-stats";
-      durationWrapper.style.margin = "0px";
-      const durationDescription = document.createElement("span");
-      durationDescription.id = "duration";
-      durationDescription.className = "description";
-      durationDescription.textContent = duration;
-      durationWrapper.appendChild(durationDescription);
-      summary.insertBefore(durationWrapper, summary.childNodes[0]);
-
+      createDurationWrapper(summary, duration);
 
       // =-=-=-=-= Stories =-=-=-=-=
       fillStoriesInfo(storys, totalStories);
 
-      const taskboardInner = document.querySelector(".taskboard-inner");
-
-
       // =-=-=-=-= Members info =-=-=-=-=
-      const tasksProductivityContainer = document.createElement("div");
-      tasksProductivityContainer.style.padding = "1rem";
-      tasksProductivityContainer.style.backgroundColor = "#f9f9fb";
 
-      const tasksProductivityWrapper = document.createElement("div");
-      const membersInfoTable = document.createElement("table");
-      membersInfoTable.id = "members-info";
-
+      // Título da produtividade dos membros
       const membersInfoTitle = document.createElement(
         "h3"
       ) as HTMLHeadingElement;
@@ -185,6 +117,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       membersInfoTitle.style.padding = "0 0 0.5rem";
       membersInfoTitle.style.fontFamily = "Ubuntu-Medium";
       membersInfoTitle.style.fontSize = "22.4px";
+
+      // Tabela da produtividade dos membros
+      const membersInfoTable = document.createElement("table");
+      membersInfoTable.id = "members-info";
 
       fillMembersTable(membersInfoTable, aggregatedMembersInfo);
       membersInfoTable.style.color = "#4c566a";
@@ -196,20 +132,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         td.style.paddingBottom = ".5rem";
       });
 
-      const membersInfoWrapper = document.createElement("div") as HTMLDivElement;
-      membersInfoWrapper.id = 'members-info-wrapper';
-
+      // Div interna que contém o título e a tabela da produtividade dos membros
+      const membersInfoWrapper = document.createElement(
+        "div"
+      ) as HTMLDivElement;
       membersInfoWrapper.appendChild(membersInfoTitle);
       membersInfoWrapper.appendChild(membersInfoTable);
 
-      tasksProductivityWrapper.appendChild(membersInfoWrapper)
-      tasksProductivityWrapper.style.backgroundColor = "#fff";
-      tasksProductivityWrapper.style.borderRadius = "3px";
-      tasksProductivityWrapper.style.padding = "1rem";
-      tasksProductivityWrapper.style.display = "flex";
-      tasksProductivityWrapper.style.gap = "5rem";
-
-      
       // =-=-=-=-= Total Tasks =-=-=-=-=
       const totalTasksTitle = document.createElement(
         "h3"
@@ -218,17 +147,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       totalTasksTitle.style.padding = "0 0 0.5rem";
       totalTasksTitle.style.fontFamily = "Ubuntu-Medium";
       totalTasksTitle.style.fontSize = "22.4px";
-      
+
       const totalTasksWrapper = document.createElement("div");
       const totalTasksList = document.createElement("ul");
-      totalTasksList.style.display = 'flex';
-      totalTasksList.style.flexDirection = 'column';
-      totalTasksList.style.gap = '.5rem';
-      totalTasksList.style.maxHeight = '100px';
-      totalTasksList.style.flexWrap = 'wrap';
-      totalTasksList.style.maxHeight = '100px';
-      totalTasksList.style.fontSize = '14px';
-      totalTasksList.style.color = '#4c566a';
+      totalTasksList.style.display = "flex";
+      totalTasksList.style.flexDirection = "column";
+      totalTasksList.style.gap = ".5rem";
+      totalTasksList.style.maxHeight = "100px";
+      totalTasksList.style.flexWrap = "wrap";
+      totalTasksList.style.maxHeight = "100px";
+      totalTasksList.style.fontSize = "14px";
+      totalTasksList.style.color = "#4c566a";
       totalTasksWrapper.id = "qtd-total";
       const totalOfTotalTypes = Object.values(totalTypes).reduce(
         (acc: number, curr: number) => acc + curr,
@@ -236,16 +165,39 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       );
       totalTasksTitle.textContent = `Tasks (${totalOfTotalTypes})`;
       totalTasksList.innerHTML = `${Object.entries(totalTypes)
-        .map(([key, value]) => `<li>${key}: ${value}</li>`).join(' ')}`;
+        .map(([key, value]) => `<li>${key}: ${value}</li>`)
+        .join(" ")}`;
 
-      totalTasksWrapper.appendChild(totalTasksTitle)
-      totalTasksWrapper.appendChild(totalTasksList)
+      totalTasksWrapper.appendChild(totalTasksTitle);
+      totalTasksWrapper.appendChild(totalTasksList);
 
-      tasksProductivityWrapper.appendChild(totalTasksWrapper)
-      
-      tasksProductivityContainer.appendChild(tasksProductivityWrapper);
+      // Preenche a variável p ficar disponível para cópia
+      totalTasks += `${totalOfTotalTypes} (${Object.entries(totalTypes)
+        .map(([key, value]) => `${key}: ${value}`)
+        .join(", ")})`;
+
+      // Div interna que contém a produtividade dos membros e as tasks
+      const membersAndTasksInternalWrapper = document.createElement("div");
+      membersAndTasksInternalWrapper.appendChild(membersInfoWrapper);
+      membersAndTasksInternalWrapper.style.backgroundColor = "#fff";
+      membersAndTasksInternalWrapper.style.borderRadius = "3px";
+      membersAndTasksInternalWrapper.style.padding = "1rem";
+      membersAndTasksInternalWrapper.style.display = "flex";
+      membersAndTasksInternalWrapper.style.gap = "5rem";
+      membersAndTasksInternalWrapper.appendChild(totalTasksWrapper);
+
+      // Div externa que contém a produtividade dos membros e as tasks
+      const membersAndTasksExternalWrapper = document.createElement("div");
+      membersAndTasksExternalWrapper.style.padding = "1rem";
+      membersAndTasksExternalWrapper.style.backgroundColor = "#f9f9fb";
+      membersAndTasksExternalWrapper.appendChild(
+        membersAndTasksInternalWrapper
+      );
+
+      // Taskboard
+      const taskboardInner = document.querySelector(".taskboard-inner");
       taskboardInner.insertBefore(
-        tasksProductivityContainer,
+        membersAndTasksExternalWrapper,
         taskboardInner.childNodes[5]
       );
     }
