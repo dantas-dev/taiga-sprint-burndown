@@ -14,7 +14,9 @@ a fazer
 - [x] Botão copy
 
 **V0.3**
-- [ ] Add elementos na página do taiga
+- [x] Add elementos na página do taiga
+- [x] Correções da versão 0.2
+- [x] Gerar report de forma automática
 
 **V0.4**
 - [ ] Adicionar gráfico
