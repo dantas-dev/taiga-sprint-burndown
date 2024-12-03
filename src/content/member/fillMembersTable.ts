@@ -1,23 +1,28 @@
 import { MemberTaskInfo } from "../../interfaces";
 
-function fillMembersTable(
+export function fillMembersTable(
   table: HTMLTableElement,
   membersInfo: MemberTaskInfo[]
 ) {
-  table
-    .querySelectorAll("tr:not(:first-child)")
-    .forEach((row) => row.remove());
   membersInfo.forEach((member) => {
     const row = document.createElement("tr");
+    row.style.display = "flex";
+    row.style.alignItems = "center";
+    const memberImageCell = document.createElement("td");
+    memberImageCell.innerHTML = `<img src="${member.img}"
+    alt="${member.member}"
+    title="${member.member}"
+    style="border: 2px solid #fff; border-radius: 15px; display: flex; height: 30px; width: 30px;"/>`;
+    row.appendChild(memberImageCell);
     const memberCell = document.createElement("td");
-    memberCell.textContent = member.member;
+    memberCell.textContent = `${member.member}: `;
     row.appendChild(memberCell);
-    const tasksCell = document.createElement("td");
-    tasksCell.textContent = member.tasks.toString();
-    row.appendChild(tasksCell);
     const hoursCell = document.createElement("td");
-    hoursCell.textContent = member.hours;
+    hoursCell.textContent = `${member.hours}H`;
     row.appendChild(hoursCell);
+    const tasksCell = document.createElement("td");
+    tasksCell.textContent = `(${member.tasks.toString()} tasks)`;
+    row.appendChild(tasksCell);
     table.appendChild(row);
   });
 }

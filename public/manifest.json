@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Taiga Sprint Burndown",
-  "version": "0.1",
+  "version": "0.3",
   "icons": {
     "32": "icon32.png",
     "64": "icon64.png",

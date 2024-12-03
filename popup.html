@@ -3,17 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Taiga Sprint Burndown v.0.1</title>
+    <title>Taiga Sprint Burndown v.0.3</title>
     <script type="module" src="src/popup/main.ts"></script>
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
+    <span id="badge"></span>
     <h1>Taiga Sprint Burndown</h1>
-    <p class="dantinhas">v0.1 - author: Eduardo Dantas</p>
-    <p id="error">Site inválido.</p>
-    <div id="content">
-      <button id="refresh">Refresh</button>
-      <button id="copyData" disabled>Copy</button>
+    <div class="wrapper">
+      <ul class="dantinhas">v0.3 - Authors:
+        <li><img src="public/dolphin.svg">Eduardo Dantas</li>
+        <li><img src="public/dolphin.svg">Daniel Vinicius</li>
+        <li><img src="public/dolphin.svg">Vinicius Yuri</li>
+        <li><img src="public/dolphin.svg">Emanoel Mattos</li>
+      </ul>
+      <button id="copyData" disabled>
+        COPY
+        <img src="public/copy.svg">
+      </button>
     </div>
+    <p id="error">Site inválido.</p>
   </body>
 </html>

@@ -1,4 +1,4 @@
-function clearOldData(
+export function clearOldData(
   mainTaskboard: HTMLDivElement,
   summary: HTMLDivElement
 ) {
@@ -31,8 +31,10 @@ function clearOldData(
       ".large-summary-wrapper"
     ) as HTMLDivElement;
     largeSummaryWrapper.appendChild(toggleAnalyticsWrapper);
-    iocaineWrapper.remove();
-    openTasksWrapper.remove();
+    if (iocaineWrapper && openTasksWrapper) {
+      iocaineWrapper.remove();
+      openTasksWrapper.remove();
+    }
     moveUnfinishedWrapper.style.border = "none";
     completedPointsWrapper.style.border = "none";
   }
@@ -41,4 +43,9 @@ function clearOldData(
   if (pointsStats) {
     pointsStats.remove();
   }
+
+  const graphicsContainer = document.querySelector(
+    ".graphics-container"
+  ) as HTMLDivElement;
+  graphicsContainer.style.marginTop = "0px";
 }

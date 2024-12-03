@@ -5,6 +5,7 @@ export interface Task {
   isClosed: boolean;
   isNew: boolean;
   assignedTo: string;
+  memberImageUrl: string;
 }
 
 export interface Story {
@@ -42,6 +43,7 @@ export interface SumStorys {
 
 export interface MemberTaskInfo {
   member: string;
+  img: string;
   tasks: number;
   hours: string;
 }

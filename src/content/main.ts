@@ -1,4 +1,3 @@
-import { MemberTaskInfo, Story } from "../interfaces";
 import { calculatePercentage } from "./calculatePercentage";
 import { getDuration } from "./getDuration";
 import { aggregateMembersInfo } from "./member/aggregateMembersInfo";
@@ -7,77 +6,42 @@ import { sumStorys } from "./story/sumStorys";
 import { parseTime } from "./time/parseTime";
 import { subtractTimes } from "./time/subtractTimes";
 import { getSquadName } from "./squad/getSquadName";
+import { fillMembersTable } from "./member/fillMembersTable";
+import { clearOldData } from "./clearOldData";
+import { fillStoriesInfo } from "./story/fillStoriesInfo";
+import { createTotalHrWrapper } from "./layout/totalHr";
+import { createTotalNewHRWrapper } from "./layout/totalNewHr";
+import { createQtdNewWrapper } from "./layout/qtdNew";
+import { createDurationWrapper } from "./layout/duration";
+import { updateTotalClosedWrapper } from "./layout/totalClosed";
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   function checkNaN(hr: string) {
     return hr.includes("NaN") ? "NOT FOUND" : hr;
   }
-  function clearOldData(
-    mainTaskboard: HTMLDivElement,
-    summary: HTMLDivElement
-  ) {
-    if (mainTaskboard) {
-      mainTaskboard.style.height = "auto";
-    }
-    if (summary) {
-      summary.style.height = "auto";
-      summary.style.overflow = "visible";
-      summary.style.display = "flex";
-      summary.style.flexDirection = "column";
-
-      const iocaineWrapper = summary.querySelector(
-        ".summary-stats.summary-iocaine"
-      ) as HTMLDivElement;
-      const openTasksWrapper = summary.querySelector(
-        ".summary-stats.summary-open-tasks"
-      ) as HTMLDivElement;
-      const moveUnfinishedWrapper = summary.querySelector(
-        ".summary-stats.summary-move-unfinished"
-      ) as HTMLDivElement;
-      const completedPointsWrapper = summary.querySelector(
-        ".summary-stats.summary-completed-points"
-      ) as HTMLDivElement;
-      const toggleAnalyticsWrapper = summary.querySelector(
-        ".stats.toggle-analytics-visibility"
-      ) as HTMLDivElement;
-      toggleAnalyticsWrapper.style.marginLeft = "0";
-      const largeSummaryWrapper = summary.querySelector(
-        ".large-summary-wrapper"
-      ) as HTMLDivElement;
-      largeSummaryWrapper.appendChild(toggleAnalyticsWrapper);
-      iocaineWrapper.remove();
-      openTasksWrapper.remove();
-      moveUnfinishedWrapper.style.border = "none";
-      completedPointsWrapper.style.border = "none";
-    }
-
-    const pointsStats = summary.querySelector(".points-per-role-stats");
-    if (pointsStats) {
-      pointsStats.remove();
+  function conditionalRemoveElement(id: string) {
+    const element = document.querySelector(id);
+    if (element) {
+      element.remove();
     }
   }
-  function fillMembersTable(
-    table: HTMLTableElement,
-    membersInfo: MemberTaskInfo[]
-  ) {
-    table
-      .querySelectorAll("tr:not(:first-child)")
-      .forEach((row) => row.remove());
-    membersInfo.forEach((member) => {
-      const row = document.createElement("tr");
-      const memberCell = document.createElement("td");
-      memberCell.textContent = member.member;
-      row.appendChild(memberCell);
-      const tasksCell = document.createElement("td");
-      tasksCell.textContent = member.tasks.toString();
-      row.appendChild(tasksCell);
-      const hoursCell = document.createElement("td");
-      hoursCell.textContent = member.hours;
-      row.appendChild(hoursCell);
-      table.appendChild(row);
+
+  function clearElements() {
+    conditionalRemoveElement('#duration');
+    conditionalRemoveElement('#total-hr-wrapper');
+    conditionalRemoveElement('#qtd-new-hr-wrapper');
+    conditionalRemoveElement('#qtd-total');
+    conditionalRemoveElement('#qtd-new');
+    conditionalRemoveElement('#qtd-new-hr');
+    conditionalRemoveElement('#members-info-wrapper');
+    const stories = Array.from(document.querySelectorAll('#stories'));
+    stories.forEach((element) => {
+      element.remove();
     });
   }
+
   if (message.action === "getData") {
+    clearElements();
     const squadName = getSquadName();
     const duration = getDuration();
     const storys = getStorys();
@@ -90,7 +54,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       totalNewHR,
     } = sumStorys(storys);
     const aggregatedMembersInfo = aggregateMembersInfo(storys);
-
     const totalPercent = calculatePercentage(
       parseTime(totalClosedHR),
       parseTime(totalHR)
@@ -104,11 +67,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       ".large-summary"
     ) as HTMLDivElement;
 
-    let totalTasks = '';
-    let totalStories = '';
-    let membersInfoText = '';
+    let totalTasks = "";
+    let totalStories = "";
+    let membersInfoText = "";
     if (mainTaskboard && summary) {
-      // limpeza
       clearOldData(mainTaskboard, summary);
 
       const mainSummaryStats = summary.querySelector(".main-summary-stats");
@@ -125,177 +87,120 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       progressBar.style.width = `${checkNaN(totalPercent)}%`;
       progressBarDataNumber.innerText = `${checkNaN(totalPercent)}%`;
 
-      //Total Closed
-      const totalClosedWrapper = document.querySelector(
-        ".summary-closed-tasks"
-      );
-      const totalClosedNumber = totalClosedWrapper.childNodes[0] as HTMLElement;
-      totalClosedNumber.innerText = `${totalClosed}`;
+      updateTotalClosedWrapper(totalClosed);
 
-      // Total Hr
-      const totalHrWrapper = document.createElement("div");
-      totalHrWrapper.className = "summary-stats";
-      const totalHrNumber = document.createElement("span");
-      totalHrNumber.id = "total-hr";
-      totalHrNumber.className = "number";
-      const totalHrDescription = document.createElement("span");
-      totalHrDescription.className = "description";
-      totalHrNumber.textContent = `${checkNaN(totalClosedHR)} / ${checkNaN(
-        totalHR
-      )}`;
-      totalHrDescription.innerHTML = `total hrs <br/>(${remainingHours} hrs remaining)`;
-      totalHrWrapper.appendChild(totalHrNumber);
-      totalHrWrapper.appendChild(totalHrDescription);
-      mainSummaryStats.insertBefore(
-        totalHrWrapper,
-        mainSummaryStats.childNodes[0]
+      createTotalHrWrapper(
+        mainSummaryStats,
+        totalClosedHR,
+        totalHR,
+        remainingHours
       );
 
-      // total New Hr
-      const newHrWrapper = document.createElement("div");
-      newHrWrapper.className = "summary-stats";
-      const newHrNumber = document.createElement("span");
-      newHrNumber.className = "number";
-      newHrNumber.id = "qtd-new-hr";
-      const newHrDescription = document.createElement("span");
-      newHrDescription.className = "description";
-      newHrNumber.textContent = totalNewHR;
-      newHrDescription.innerHTML = "total new<br/>(hrs)";
-      newHrWrapper.appendChild(newHrNumber);
-      newHrWrapper.appendChild(newHrDescription);
-      mainSummaryStats.insertBefore(
-        newHrWrapper,
-        mainSummaryStats.childNodes[7]
-      );
+      createTotalNewHRWrapper(mainSummaryStats, totalNewHR);
 
-      // Qtd New
-      const qtdNewWrapper = document.createElement("div");
-      qtdNewWrapper.className = "summary-stats";
-      const qtdNewNumber = document.createElement("span");
-      qtdNewNumber.id = "qtd-new";
-      qtdNewNumber.className = "number";
-      const qtdNewDescription = document.createElement("span");
-      qtdNewDescription.className = "description";
-      qtdNewNumber.textContent = `${totalNew}`;
-      qtdNewDescription.innerHTML = "new<br/> tasks";
-      qtdNewWrapper.appendChild(qtdNewNumber);
-      qtdNewWrapper.appendChild(qtdNewDescription);
-      mainSummaryStats.insertBefore(
-        qtdNewWrapper,
-        mainSummaryStats.childNodes[7]
-      );
+      createQtdNewWrapper(mainSummaryStats, totalNew);
 
-      // duration
-      const durationWrapper = document.createElement("div");
-      durationWrapper.className = "summary-stats";
-      durationWrapper.style.margin = "0px";
-      const durationDescription = document.createElement("span");
-      durationDescription.id = "duration";
-      durationDescription.className = "description";
-      durationDescription.textContent = duration;
-      durationWrapper.appendChild(durationDescription);
-      summary.insertBefore(durationWrapper, summary.childNodes[0]);
+      createDurationWrapper(summary, duration);
 
-      // Stories
-      const taskboardCards = document.querySelectorAll(".taskboard-us");
-      taskboardCards.forEach((taskboardCard: HTMLDivElement, index: number) => {
-        const title = taskboardCard.querySelector(".us-title") as HTMLElement;
-        const story = storys.find(
-          (story: Story) => story.name == title.innerText
-        );
-        const storyData = document.createElement("ul");
-        storyData.id = "stories";
-        storyData.innerHTML = `<li>TOTAL (HR): ${checkNaN(
-          story.totalHR
-        )} (${checkNaN(story.remainingHours)} - ${checkNaN(
-          story.totalPercent
-        )}%)</li>
-          <li>CLOSED (HR): ${checkNaN(
-            story.totalClosedHR
-          )} / NEW CLOSED: ${checkNaN(story.totalNewHR)}</li>
-          <li>TASKS (QTD): ${story.tasks.length} (CLOSED: ${
-          story.totalClosed
-        } / NEW: ${story.totalNew})</li>`;
-        title.appendChild(storyData);
-        storyData.style.fontSize = "14px";
-        storyData.style.paddingTop = "1rem";
-        storyData.style.color = "#4c566a";
-        const storyRow = taskboardCard.parentElement.parentElement;
-        totalStories += story.name.replace('\n', ' ') + '\n' + storyData.innerText + '\n'
-        if (storyRow.classList.contains("row-fold")) {
-          storyData.style.display = "none";
-        } else {
-          storyData.style.display = "block";
-        }
-        document
-          .querySelectorAll(".folding-actions")
-          [index].addEventListener("click", () => {
-            if (!storyRow.classList.contains("row-fold")) {
-              storyData.style.display = "none";
-            } else {
-              storyData.style.display = "block";
-            }
-          });
-      });
+      // =-=-=-=-= Stories =-=-=-=-=
+      const { countTotal } = fillStoriesInfo(storys);
+      totalStories = countTotal;
+      // =-=-=-=-= Members info =-=-=-=-=
 
-      const taskboardInner = document.querySelector(".taskboard-inner");
-      const membersWrapper = document.createElement("div");
+      // Título da produtividade dos membros
+      const membersInfoTitle = document.createElement(
+        "h3"
+      ) as HTMLHeadingElement;
+      membersInfoTitle.textContent = "Produtividade Membros";
 
-      // Total Tasks
-      const totalTasksWrapper = document.createElement("p");
-      totalTasksWrapper.id = "qtd-total";
-      const totalOfTotalTypes = Object.values(totalTypes).reduce(
-        (acc: number, curr: number) => acc + curr,
-        0
-      );
-      totalTasks = `${totalOfTotalTypes} (${Object.entries(
-        totalTypes
-      )
-        .map(([key, value]) => `${key}: ${value}`)
-        .join(", ")})`;
-      totalTasksWrapper.textContent = `Tasks: ${totalTasks}`;
-      totalTasksWrapper.style.margin = "20px 0";
-      summary.appendChild(totalTasksWrapper);
+      membersInfoTitle.style.color = "#008aa8";
+      membersInfoTitle.style.padding = "0 0 0.5rem";
+      membersInfoTitle.style.fontFamily = "Ubuntu-Medium";
+      membersInfoTitle.style.fontSize = "22.4px";
 
-      // Members info
-      const membersInfoWrapper = document.createElement("div");
+      // Tabela da produtividade dos membros
       const membersInfoTable = document.createElement("table");
       membersInfoTable.id = "members-info";
-
-      membersInfoTable.innerHTML = `
-      <tr>
-      <th>Membro</th>
-      <th>Tasks</th>
-      <th>Horas</th>
-      </tr>`;
 
       fillMembersTable(membersInfoTable, aggregatedMembersInfo);
       membersInfoTable.style.color = "#4c566a";
       membersInfoTable.style.fontSize = "14px";
       membersInfoTable.style.borderCollapse = "collapse";
 
-      membersInfoTable.querySelectorAll("th").forEach((th) => {
-        th.style.padding = ".5rem";
-        th.style.border = "1px solid #434456";
-        th.style.background = "#434456";
-        th.style.color = "#fff";
-      });
       membersInfoTable.querySelectorAll("td").forEach((td) => {
-        td.style.padding = ".5rem";
-        td.style.border = "1px solid #4c566a";
+        td.style.paddingRight = ".5rem";
+        td.style.paddingBottom = ".5rem";
       });
-      membersInfoTable.querySelectorAll("tr").forEach((tr) => {
-        tr.style.padding = ".5rem";
-      });
-      
+
+      // Div interna que contém o título e a tabela da produtividade dos membros
+      const membersInfoWrapper = document.createElement(
+        "div"
+      ) as HTMLDivElement;
+      membersInfoWrapper.appendChild(membersInfoTitle);
       membersInfoWrapper.appendChild(membersInfoTable);
-      membersInfoWrapper.style.backgroundColor = "#f9f9fb";
-      membersInfoWrapper.style.border = "1px solid transparent";
-      membersInfoWrapper.style.borderRadius = "3px";
-      membersInfoWrapper.style.padding = "1rem";
-      
-      membersWrapper.appendChild(membersInfoWrapper);
-      taskboardInner.insertBefore(membersWrapper, taskboardInner.childNodes[5]);
+
+      // =-=-=-=-= Total Tasks =-=-=-=-=
+      const totalTasksTitle = document.createElement(
+        "h3"
+      ) as HTMLHeadingElement;
+      totalTasksTitle.style.color = "#008aa8";
+      totalTasksTitle.style.padding = "0 0 0.5rem";
+      totalTasksTitle.style.fontFamily = "Ubuntu-Medium";
+      totalTasksTitle.style.fontSize = "22.4px";
+
+      const totalTasksWrapper = document.createElement("div");
+      const totalTasksList = document.createElement("ul");
+      totalTasksList.style.display = "flex";
+      totalTasksList.style.flexDirection = "column";
+      totalTasksList.style.gap = ".5rem";
+      totalTasksList.style.maxHeight = "100px";
+      totalTasksList.style.flexWrap = "wrap";
+      totalTasksList.style.maxHeight = "100px";
+      totalTasksList.style.fontSize = "14px";
+      totalTasksList.style.color = "#4c566a";
+      totalTasksWrapper.id = "qtd-total";
+      const totalOfTotalTypes = Object.values(totalTypes).reduce(
+        (acc: number, curr: number) => acc + curr,
+        0
+      );
+      totalTasksTitle.textContent = `Tasks (${totalOfTotalTypes})`;
+      totalTasksList.innerHTML = `${Object.entries(totalTypes)
+        .map(([key, value]) => `<li>${key}: ${value}</li>`)
+        .join(" ")}`;
+
+      totalTasksWrapper.appendChild(totalTasksTitle);
+      totalTasksWrapper.appendChild(totalTasksList);
+
+      // Preenche a variável p ficar disponível para cópia
+      totalTasks += `${totalOfTotalTypes} (${Object.entries(totalTypes)
+        .map(([key, value]) => `${key}: ${value}`)
+        .join(", ")})`;
+
+      // Div interna que contém a produtividade dos membros e as tasks
+      const membersAndTasksInternalWrapper = document.createElement("div");
+      membersAndTasksInternalWrapper.appendChild(membersInfoWrapper);
+      membersAndTasksInternalWrapper.style.backgroundColor = "#fff";
+      membersAndTasksInternalWrapper.style.borderRadius = "3px";
+      membersAndTasksInternalWrapper.style.padding = "1rem";
+      membersAndTasksInternalWrapper.style.display = "flex";
+      membersAndTasksInternalWrapper.style.gap = "5rem";
+      membersAndTasksInternalWrapper.appendChild(totalTasksWrapper);
+
+      // Div externa que contém a produtividade dos membros e as tasks
+      const membersAndTasksExternalWrapper = document.createElement("div");
+      membersAndTasksExternalWrapper.id = 'members-info-wrapper';
+      membersAndTasksExternalWrapper.style.padding = "1rem";
+      membersAndTasksExternalWrapper.style.backgroundColor = "#f9f9fb";
+      membersAndTasksExternalWrapper.appendChild(
+        membersAndTasksInternalWrapper
+      );
+
+      // Taskboard
+      const taskboardInner = document.querySelector(".taskboard-inner");
+      taskboardInner.insertBefore(
+        membersAndTasksExternalWrapper,
+        taskboardInner.childNodes[5]
+      );
     }
 
     sendResponse({

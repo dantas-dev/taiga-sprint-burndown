@@ -4,7 +4,8 @@ export function getTaskInfo(item: Element): Task {
   const str = item.querySelector<HTMLElement>('.card-title').innerText || '';
   const isClosed = !!item.querySelector('.card-tag[title=closed]');
   const isNew = !!item.querySelector('.card-tag[title=new]');
-  const assignedTo = item.querySelector<HTMLElement>('.card-user-avatar img').title;
+  const assignedTo = item.querySelector<HTMLImageElement>('.card-user-avatar img').title;
+  const memberImageUrl = item.querySelector<HTMLImageElement>('.card-user-avatar img').src;
   
   const regex = /#\d+\[([^\]]+)\]\s*([^\(]+)\s*\(([^)]+)\)/;
   const matches = str.match(regex);
@@ -26,5 +27,6 @@ export function getTaskInfo(item: Element): Task {
     isClosed,
     isNew,
     assignedTo,
+    memberImageUrl
   }
 }
