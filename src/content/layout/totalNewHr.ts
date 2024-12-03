@@ -5,9 +5,9 @@ export const createTotalNewHRWrapper = (
   // =-=-=-=-= total New Hr =-=-=-=-=
   const newHrWrapper = document.createElement("div");
   newHrWrapper.className = "summary-stats";
+  newHrWrapper.id = "qtd-new-hr";
   const newHrNumber = document.createElement("span");
   newHrNumber.className = "number";
-  newHrNumber.id = "qtd-new-hr";
   const newHrDescription = document.createElement("span");
   newHrDescription.className = "description";
   newHrNumber.textContent = totalNewHR;

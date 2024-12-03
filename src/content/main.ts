@@ -1,4 +1,3 @@
-import { MemberTaskInfo, Story } from "../interfaces";
 import { calculatePercentage } from "./calculatePercentage";
 import { getDuration } from "./getDuration";
 import { aggregateMembersInfo } from "./member/aggregateMembersInfo";
@@ -29,11 +28,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   function clearElements() {
     conditionalRemoveElement('#duration');
-    conditionalRemoveElement('#total-hr');
-    conditionalRemoveElement('#qtd-new-wrapper');
-    conditionalRemoveElement('#qtd-new-hr-wrapper');
     conditionalRemoveElement('#total-hr-wrapper');
+    conditionalRemoveElement('#qtd-new-hr-wrapper');
     conditionalRemoveElement('#qtd-total');
+    conditionalRemoveElement('#qtd-new');
+    conditionalRemoveElement('#qtd-new-hr');
     conditionalRemoveElement('#members-info-wrapper');
     const stories = Array.from(document.querySelectorAll('#stories'));
     stories.forEach((element) => {
@@ -104,8 +103,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       createDurationWrapper(summary, duration);
 
       // =-=-=-=-= Stories =-=-=-=-=
-      fillStoriesInfo(storys, totalStories);
-
+      const { countTotal } = fillStoriesInfo(storys);
+      totalStories = countTotal;
       // =-=-=-=-= Members info =-=-=-=-=
 
       // Título da produtividade dos membros
@@ -113,6 +112,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         "h3"
       ) as HTMLHeadingElement;
       membersInfoTitle.textContent = "Produtividade Membros";
+
       membersInfoTitle.style.color = "#008aa8";
       membersInfoTitle.style.padding = "0 0 0.5rem";
       membersInfoTitle.style.fontFamily = "Ubuntu-Medium";
@@ -188,6 +188,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
       // Div externa que contém a produtividade dos membros e as tasks
       const membersAndTasksExternalWrapper = document.createElement("div");
+      membersAndTasksExternalWrapper.id = 'members-info-wrapper';
       membersAndTasksExternalWrapper.style.padding = "1rem";
       membersAndTasksExternalWrapper.style.backgroundColor = "#f9f9fb";
       membersAndTasksExternalWrapper.appendChild(

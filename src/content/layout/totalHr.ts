@@ -13,6 +13,7 @@ export const createTotalHrWrapper = (
   totalHrWrapper.className = "summary-stats";
   const totalHrNumber = document.createElement("span");
   totalHrNumber.id = "total-hr";
+  totalHrWrapper.id = "total-hr-wrapper";
   totalHrNumber.className = "number";
   const totalHrDescription = document.createElement("span");
   totalHrDescription.className = "description";

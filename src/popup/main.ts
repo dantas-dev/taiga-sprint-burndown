@@ -50,8 +50,8 @@ document.addEventListener("DOMContentLoaded", () => {
       `TOTAL NEW (HR): ${totalNewHR}\n`+
       `TOTAL (TASKS): ${totalTasks}\n`+
       `QTD. CLOSED: ${totalClosed}\n`+
-      `QTD. NEW: ${totalNew}\n`+
-      `STORIES\n${totalStories}\n\n`+
+      `QTD. NEW: ${totalNew}\n\n`+
+      `STORIES:\n${totalStories}\n\n`+
       `PRODUTIVIDADE DA SQUAD: \n${renderMembersInfos(aggregatedMembersInfo)}`
     ;
         navigator.clipboard.writeText(allFields);

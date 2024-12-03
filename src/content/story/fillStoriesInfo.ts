@@ -4,7 +4,8 @@ function checkNaN(hr: string) {
   return hr.includes("NaN") ? "NOT FOUND" : hr;
 }
 
-export function fillStoriesInfo(stories: Story[], totalStories: string) {
+export function fillStoriesInfo(stories: Story[]) {
+  let totalStories = '';
   const taskboardCards = document.querySelectorAll(".taskboard-us");
   taskboardCards.forEach((taskboardCard: HTMLDivElement, index: number) => {
     const title = taskboardCard.querySelector(".us-title") as HTMLElement;
@@ -27,7 +28,7 @@ export function fillStoriesInfo(stories: Story[], totalStories: string) {
     storyData.style.color = "#4c566a";
     const storyRow = taskboardCard.parentElement.parentElement;
     totalStories +=
-      story.name.replace("\n", " ") + "\n" + storyData.innerText + "\n";
+      story.name.replace("\n", " ") + "\n" + storyData.innerText + "\n\n";
     if (storyRow.classList.contains("row-fold")) {
       storyData.style.display = "none";
     } else {
@@ -43,4 +44,8 @@ export function fillStoriesInfo(stories: Story[], totalStories: string) {
         }
       });
   });
+
+  return {
+    countTotal: totalStories,
+  }
 }
